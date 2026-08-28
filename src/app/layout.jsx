@@ -29,13 +29,13 @@ export const metadata = {
   openGraph: {
     title: "Kevin Lai — CIM × Industrial AI Engineer",
     description: "跨足 OT/IT 雙域的工程師，專注於工業自動化與 AI 全端開發。",
-    url: "https://kapy0312.github.io/portfolio-web/",
+    url: "https://kapy0312.github.io/portfolio-next/",
     siteName: "Kevin Lai Portfolio",
     locale: "zh_TW",
     type: "website",
   },
   icons: {
-    icon: "/portfolio-web/favicon.svg",
+    icon: "/portfolio-next/favicon.svg",
   },
 };
 
