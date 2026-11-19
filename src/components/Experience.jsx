@@ -8,14 +8,13 @@ const EXPERIENCES = [
     period: "2023/03 — 現在",
     role: "CIM / 工業 AI 工程師",
     company: "製造業（台中，金屬加工用機械製造）",
-    desc: "負責多站 CNC 拋光系統 PLC / HMI 開發（SINUMERIK ONE + TIA Portal），同時主導 IIoT SCADA 平台全端建置，整合 OPC-UA、SLMP、TimescaleDB 與 Ollama LLM AI 診斷。以 AI 協作開發方式推進軟體全端專案。",
+    desc: "負責五軸 CNC 拋光系統 PLC / HMI 開發（SINUMERIK ONE + TIA Portal + C# HMI），單站已交付客戶試車，多站協調架構開發中，並完成交接手冊與場內模擬機。工作之餘自主建置 IIoT SCADA 與 RAG 平台，把 OPC UA、時序資料、LLM 診斷與 AWS 雲端串成完整作品。",
     tags: [
       "SINUMERIK ONE",
       "TIA Portal",
-      "OPC-UA",
-      "FastAPI",
-      "React",
-      "Ollama",
+      "C# HMI",
+      "SINAMICS S120",
+      "CU240E",
     ],
   },
   {
@@ -37,6 +36,19 @@ const EXPERIENCES = [
       "Omron NX1P2",
       "Modbus RTU",
     ],
+  },
+];
+
+const CERTS = [
+  {
+    date: "2026/10",
+    name: "AWS Certified Solutions Architect – Associate",
+    note: "SAA-C03，790 分",
+  },
+  {
+    date: "2020/12 起",
+    name: "勞動部勞動力發展署 西門子業界講師",
+    note: "PLC、伺服馬達控制課程",
   },
 ];
 
@@ -96,6 +108,24 @@ export default function Experience() {
               delay={i * 120}
             />
           ))}
+        </div>
+
+        <div className="mt-6 pt-10 border-t border-white/[0.07]">
+          <p className="text-xs font-mono tracking-[0.18em] uppercase text-dim mb-5">
+            Certifications
+          </p>
+          <ul className="flex flex-col gap-3">
+            {CERTS.map((c) => (
+              <li
+                key={c.name}
+                className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-3"
+              >
+                <span className="text-xs font-mono text-dim sm:w-24 shrink-0">{c.date}</span>
+                <span className="text-sm text-primary font-medium">{c.name}</span>
+                <span className="text-xs text-cyan/70 sm:ml-auto">{c.note}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

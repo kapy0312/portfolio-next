@@ -2,67 +2,75 @@
 
 # Kevin Lai — Portfolio (Next.js SSG)
 
-Personal portfolio site for **Kevin Lai**, a CIM / Industrial AI Engineer
-bridging OT (Siemens SINUMERIK, TIA Portal, OPC-UA) and IT (FastAPI, React,
-AI integration).
+Personal portfolio of **Kevin Lai**, a CIM / Industrial AI engineer working across OT (Siemens SINUMERIK, TIA Portal, OPC UA) and IT (FastAPI, React, LLM / RAG, AWS).
 
 🔗 **Live site:** [kapy0312.github.io/portfolio-next](https://kapy0312.github.io/portfolio-next/)
 
 ---
 
-## Why this exists
+## What's on the site
 
-This is a rewrite of an earlier Vite + React CSR portfolio. The original
-shipped an empty `<div id="root">` at the HTML level — fine for users, but
-recruiters' link previews, some crawlers, and anything that doesn't execute
-JS saw nothing. This version uses **Next.js App Router with Static Export
-(SSG)**, so every page is fully rendered to HTML at build time. The output
-is still 100% static files — no server, no API routes — just deployed to
-GitHub Pages the same way the Vite version was.
+| Section | Content |
+|---|---|
+| Selected work | [IIoT SCADA Platform](https://github.com/kapy0312/iot-scada-platform), [RAG Platform](https://github.com/kapy0312/rag-platform) (with live demo), [VLT CNC Polishing](https://github.com/kapy0312/vlt-cnc-showcase), [BFX Lending Bot](https://github.com/kapy0312/bfx-lending-bot-showcase) |
+| Case studies (`/case-studies`) | Five stories: retracting a wrong evaluation conclusion, honest hit/miss rates for predictive warnings, RAG for industrial fault diagnosis, a negative fine-tuning result, and fixing the mechanism behind an API key leak |
+| More work | Local AI service suite, [Subtitle generator](https://github.com/kapy0312/subtitle-app), [YT-Media-Extractor](https://github.com/kapy0312/YT-Media-Extractor), Pikmin classroom app |
+| Skills, experience, certifications | OT / IT skills, work history, AWS SAA, Siemens industry instructor |
+
+## Why Next.js SSG
+
+The earlier Vite + React CSR version shipped an empty `<div id="root">`. Fine in a browser, but link previews, search engines and anything that doesn't run JavaScript saw nothing. This version uses **Next.js App Router with Static Export (SSG)**, so every page is rendered to full HTML at build time. The output is still plain static files, deployed to GitHub Pages.
 
 ## Tech stack
 
 - **Framework:** Next.js 15 (App Router, `output: 'export'`)
 - **UI:** React 18, Tailwind CSS v4 (`@tailwindcss/postcss`)
-- **Fonts:** `next/font/google` — Space Grotesk, Inter, Noto Sans TC
-- **Animations:** IntersectionObserver-based scroll reveals (no animation library)
+- **Fonts:** `next/font/google` (Space Grotesk, Inter, Noto Sans TC)
+- **Animation:** IntersectionObserver scroll reveals, no animation library
 - **Deployment:** GitHub Actions → `gh-pages` branch → GitHub Pages
 
 ## Project structure
 
 ```
 portfolio-next/
-├── next.config.js          # output: 'export', basePath for GitHub Pages
-├── postcss.config.mjs      # Tailwind v4 via PostCSS
-├── jsconfig.json           # "@/*" path alias → "./src/*"
+├── next.config.js            # output: 'export', basePath (production only)
+├── postcss.config.mjs        # Tailwind v4
+├── jsconfig.json             # "@/*" → "./src/*"
 ├── public/
-│   └── favicon.svg
+│   ├── favicon.svg
+│   ├── images/               # project screenshots (WebP)
+│   └── architecture/         # architecture diagrams (standalone HTML, sanitized)
 ├── .github/workflows/
-│   └── deploy.yml          # CI: build → .nojekyll → push to gh-pages
+│   └── deploy.yml            # build → .nojekyll → push to gh-pages
 └── src/
     ├── app/
-    │   ├── layout.jsx      # metadata, next/font setup
-    │   ├── page.jsx        # assembles all sections
-    │   └── globals.css     # Tailwind theme tokens + custom CSS
-    ├── components/
-    │   ├── Navbar.jsx
-    │   ├── Hero.jsx
-    │   ├── Skills.jsx
-    │   ├── FeaturedProjects.jsx
-    │   ├── OtherProjects.jsx
-    │   ├── ProjectCard.jsx     # variant="featured" | "small"
-    │   ├── SectionTitle.jsx
-    │   ├── SkillBadge.jsx
-    │   ├── Experience.jsx
-    │   └── Contact.jsx
-    └── hooks/
-        └── useInView.js     # fire-once scroll-reveal hook
+    │   ├── layout.jsx        # metadata, fonts
+    │   ├── page.jsx          # home page
+    │   ├── case-studies/
+    │   │   └── page.jsx      # full case studies page
+    │   └── globals.css
+    ├── components/           # Navbar, Hero, Skills, FeaturedProjects,
+    │                         # CaseStudiesPreview, OtherProjects, ProjectCard,
+    │                         # SectionTitle, SkillBadge, Experience, Contact
+    ├── hooks/
+    │   └── useInView.js
+    └── lib/
+        ├── caseStudies.js    # case study content (shared by home and /case-studies)
+        └── asset.js          # prefixes public/ paths with basePath
 ```
 
-Components using state or browser APIs (`useState`, `useEffect`,
-`useInView`) are marked `'use client'`. Pure presentational components
-(`SkillBadge`, `FeaturedProjects`, `OtherProjects`) stay as Server
-Components.
+## Where to edit content
+
+| What | File |
+|---|---|
+| Selected work (text, metrics, tags, links, screenshots) | `src/components/FeaturedProjects.jsx` |
+| More work | `src/components/OtherProjects.jsx` |
+| Case studies | `src/lib/caseStudies.js` |
+| Skills | `src/components/Skills.jsx` |
+| Experience and certifications | `src/components/Experience.jsx` |
+| Contact | `src/components/Contact.jsx`, `src/components/Navbar.jsx` |
+
+Put screenshots in `public/images/` (`mediaUrl: "/images/name.webp"`) and diagrams in `public/architecture/` (`architecture: "/architecture/name.html"`, which adds an architecture button to the card); the base path is added automatically. The VLT diagram is a sanitized public version of a company project: PLC/NCK addresses, code names and mechanical specs are removed.
 
 ## Getting started
 
@@ -71,11 +79,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-`basePath` only applies in production builds
-(`isProd = process.env.NODE_ENV === 'production'` in `next.config.js`), so
-dev mode runs at the root path — no need to visit `/portfolio-next/` locally.
+Open [http://localhost:3000](http://localhost:3000). `basePath` only applies to production builds.
 
 ## Build
 
@@ -83,33 +87,16 @@ dev mode runs at the root path — no need to visit `/portfolio-next/` locally.
 npm run build
 ```
 
-Static output goes to `out/`. To verify SSG actually worked, open
-`out/index.html` in a text editor — the Chinese content (e.g. "CIM 工程師")
-should be directly readable in the raw HTML, not hidden behind a client-side
-render.
+Output goes to `out/`. Open `out/index.html` in a text editor: the page text (e.g. "CIM 工程師") should be in the raw HTML.
 
 ## Deployment
 
-Pushing to `main` triggers `.github/workflows/deploy.yml`, which:
+Pushing to `main` runs `.github/workflows/deploy.yml`: `npm ci` → `next build` → create `out/.nojekyll` (otherwise Jekyll drops the `_next/` folder) → publish `out/` to `gh-pages` with `peaceiris/actions-gh-pages`.
 
-1. Installs dependencies (`npm ci`)
-2. Runs `next build`
-3. Adds `out/.nojekyll` (otherwise GitHub Pages' Jekyll processor silently
-   drops the `_next/` asset folder because of the leading underscore)
-4. Publishes `out/` to the `gh-pages` branch via `peaceiris/actions-gh-pages`
-
-**One-time repo setup required:**
-- Settings → Pages → Source → Deploy from a branch → `gh-pages`
-- Settings → Actions → General → Workflow permissions → **Read and write**
-  (the default read-only token will get a 403 on push otherwise)
-
-Manual deploy is also available via `npm run deploy` (build + `gh-pages -d out`).
+**One-time setup:** Settings → Pages → deploy from `gh-pages`; Settings → Actions → Workflow permissions → **Read and write**.
 
 ## TODO
 
-- [ ] Replace placeholder email (`your@email.com`) in `Navbar.jsx` and `Contact.jsx`
-- [ ] Replace placeholder 104 resume link in `Contact.jsx`
-- [ ] Replace placeholder `public/favicon.svg` with the real icon
-- [ ] Record and embed IIoT SCADA demo video (`FeaturedProjects.jsx` → `mediaUrl`)
-- [ ] Confirm `vlt-cnc-showcase` and `bfx-lending-bot-showcase` repos exist
-      and are public, or the linked buttons will 404
+- [ ] Add the 104 resume link back to `Contact.jsx` once the resume is public
+- [ ] Add demo video links for IIoT SCADA and RAG Platform when recorded
+- [ ] Replace the placeholder `public/favicon.svg`

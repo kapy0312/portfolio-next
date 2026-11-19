@@ -1,0 +1,368 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>VLT 五軸拋光機架構（公開版）</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: 單欄閱讀頁，頂部問題 → 可橫向捲動的架構圖 → 三張說明卡；工業控制櫃的冷灰鋼板配石油青主流程 */
+:root{
+  --bg:#f3f5f6; --panel:#e6ebed; --inner:#f7f9fa; --box:#ffffff; --box-line:#9aa8ae;
+  --fg:#18252b; --muted:#56666d; --line:#8a989e;
+  --flow:#00747a; --on-flow:#ffffff; --alt:#c2551a; --sup:#6a4fb3; --sup-bg:#efeaf9;
+  --card:#ffffff; --card-line:#d3dbde;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11181b; --panel:#18222a; --inner:#1d2930; --box:#22313a; --box-line:#4c6069;
+  --fg:#e3ebee; --muted:#9db0b7; --line:#71858d;
+  --flow:#2fc4c4; --on-flow:#0b1a1c; --alt:#f08a4b; --sup:#a993f0; --sup-bg:#241f37;
+  --card:#18222a; --card-line:#2c3c45; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11181b; --panel:#18222a; --inner:#1d2930; --box:#22313a; --box-line:#4c6069;
+  --fg:#e3ebee; --muted:#9db0b7; --line:#71858d;
+  --flow:#2fc4c4; --on-flow:#0b1a1c; --alt:#f08a4b; --sup:#a993f0; --sup-bg:#241f37;
+  --card:#18222a; --card-line:#2c3c45; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.7;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:grid;gap:6px;margin-bottom:18px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;color:var(--flow);text-transform:uppercase}
+h1{font-size:clamp(26px,4vw,38px);font-weight:900;line-height:1.2;margin:0;text-wrap:balance}
+.q{margin:0;color:var(--muted);max-width:68ch}
+.q b{color:var(--fg);font-weight:700}
+.figure{overflow-x:auto;background:var(--bg);border:1px solid var(--card-line);border-radius:12px;-webkit-overflow-scrolling:touch}
+.figure svg{display:block;width:100%;min-width:1100px;height:auto}
+.hint{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin:8px 2px 0}
+/* svg */
+.outer{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:6 5}
+.outer-t{fill:var(--fg);font-weight:700;font-size:13px}
+.col{fill:var(--panel);stroke:none}
+.col-t{fill:var(--muted);font-size:12px;font-weight:700}
+.inner{fill:var(--inner);stroke:var(--line);stroke-width:1;stroke-dasharray:4 4}
+.inner-t{fill:var(--muted);font-family:var(--f-mono);font-size:10.5px}
+.ftitle{dominant-baseline:auto}
+.box{fill:var(--box);stroke:var(--box-line);stroke-width:1}
+.box.mute{stroke-dasharray:3 3}
+.box.sup{fill:var(--box);stroke:var(--sup);stroke-width:1.3}
+.sup-frame{fill:var(--sup-bg);stroke:var(--sup);stroke-width:1.5}
+.sup-frame-t{fill:var(--sup);font-size:12px;font-weight:700}
+.bt{fill:var(--fg);font-size:12.5px;font-weight:700}
+.br{fill:var(--muted);font-size:10.8px}
+.ln-flow{fill:none;stroke:var(--flow);stroke-width:2.4}
+.ln-alt{fill:none;stroke:var(--alt);stroke-width:1.8;stroke-dasharray:6 4}
+.ln-gray{fill:none;stroke:var(--line);stroke-width:1.1}
+.ah-flow{fill:var(--flow)} .ah-alt{fill:var(--alt)} .ah-gray{fill:var(--line)}
+.badge{fill:var(--flow)}
+.badge-t{fill:var(--on-flow);font-family:var(--f-mono);font-size:9.5px;font-weight:600}
+.lbl{fill:var(--flow);font-size:10.8px;font-weight:700;paint-order:stroke;stroke-width:4px;stroke-linejoin:round}
+.lbl.la{fill:var(--alt)} .lbl.lg{fill:var(--muted);font-weight:500}
+.lbl.lb{stroke:var(--bg)} .lbl.lp{stroke:var(--inner)}
+.lbl.mono{font-family:var(--f-mono);font-size:10.2px}
+.leg{fill:var(--muted);font-size:12px}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;margin-top:24px;align-items:start}
+.card{background:var(--card);border:1px solid var(--card-line);border-radius:12px;padding:18px 20px;min-width:0}
+.card h2{font-size:17px;margin:0 0 10px;font-weight:900;text-wrap:balance}
+.card h2 small{display:block;font-family:var(--f-mono);font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+ol.steps li{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:start;font-size:14px}
+.n{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--flow);color:var(--on-flow);font-family:var(--f-mono);font-size:11px;font-weight:600;margin-top:2px}
+code{font-family:var(--f-mono);font-size:.88em;background:var(--panel);padding:1px 5px;border-radius:4px;word-break:break-word}
+.pair{border-top:1px solid var(--card-line);padding-top:10px;margin-top:10px}
+.pair:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.pair h3{font-size:14px;margin:0 0 4px;font-weight:700}
+.pair p{margin:0;font-size:14px;color:var(--fg)}
+.pair .vs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.pair .vs div{background:var(--panel);border-radius:8px;padding:8px 10px;font-size:13px;min-width:0}
+.pair .vs b{display:block;font-family:var(--f-mono);font-size:12px;color:var(--flow)}
+dl.layers{margin:0;display:grid;gap:10px}
+dl.layers dt{font-weight:700;font-size:14px}
+dl.layers dt span{font-family:var(--f-mono);font-size:11px;color:var(--muted);font-weight:500;margin-left:6px}
+dl.layers dd{margin:2px 0 0;font-size:14px;color:var(--fg)}
+.alt-note{color:var(--alt);font-weight:700}
+@media (max-width:480px){.pair .vs{grid-template-columns:1fr}}
+</style>
+<div class="wrap">
+<header>
+<div class="eyebrow">VLT CNC Polishing · Single Station · 公開版</div>
+<h1>VLT 五軸拋光機架構</h1>
+<p class="q">這張圖回答一個問題：<b>操作員在 3GL 表格填好一行配方，到布輪真的貼著工件拋光，中間經過哪些系統？</b>給新進工程師與接手同仁快速建立整台機的地圖。</p>
+<p class="q" style="font-size:13px">此為公司專案的公開版本：已移除 PLC／NCK 位址、程式與函式名稱、機構規格與授權資訊，只保留系統分層與資料流程。</p>
+</header>
+<div class="figure" role="img" aria-label="VLT 單站五軸拋光機系統架構圖">
+<svg viewBox="0 0 1200 860" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="ah-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-flow" d="M0,0 L10,5 L0,10 z"/></marker>
+<marker id="ah-alt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-alt" d="M0,0 L10,5 L0,10 z"/></marker>
+<marker id="ah-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah-gray" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs><g class="legend">
+<line class="ln-flow" x1="20" y1="30" x2="70" y2="30" marker-end="url(#ah-flow)"/>
+<text class="leg" x="80" y="34" text-anchor="start">主要流程（①②③ 為順序）</text>
+<line class="ln-alt" x1="300" y1="30" x2="350" y2="30" marker-end="url(#ah-alt)"/>
+<text class="leg" x="360" y="34" text-anchor="start">替代路徑・補償迴路</text>
+<line class="ln-gray" x1="540" y1="30" x2="590" y2="30" marker-end="url(#ah-gray)"/>
+<text class="leg" x="600" y="34" text-anchor="start">一般連線</text>
+<rect class="sup-frame" x="720" y="21" width="44" height="18" rx="4"/>
+<text class="leg" x="774" y="34" text-anchor="start">全域支援</text>
+</g>
+<rect class="outer" x="15" y="58" width="1170" height="664" rx="10"/>
+<text class="ftitle outer-t" x="27" y="74">單站五軸拋光機（SINUMERIK ONE + C# 3GL）</text>
+<rect class="col" x="30" y="86" width="250" height="626" rx="10"/>
+<text class="ftitle col-t" x="42" y="102">操作端 IPC・Operate + C# 3GL</text>
+<rect class="col" x="335" y="86" width="320" height="626" rx="10"/>
+<text class="ftitle col-t" x="347" y="102">SINUMERIK ONE（NCU）</text>
+<rect class="col" x="710" y="86" width="220" height="626" rx="10"/>
+<text class="ftitle col-t" x="722" y="102">驅動與 IO</text>
+<rect class="col" x="985" y="86" width="185" height="626" rx="10"/>
+<text class="ftitle col-t" x="997" y="102">機台機構</text>
+<rect class="inner" x="345" y="108" width="300" height="314" rx="10"/>
+<text class="ftitle inner-t" x="357" y="124">NCK 數控核心</text>
+<rect class="inner" x="345" y="442" width="300" height="258" rx="10"/>
+<text class="ftitle inner-t" x="357" y="458">PLC（S7-1500 核心）</text>
+<rect class="inner" x="720" y="108" width="200" height="314" rx="10"/>
+<text class="ftitle inner-t" x="732" y="124">SINAMICS S120・DRIVE-CLiQ</text>
+<rect class="inner" x="720" y="442" width="200" height="258" rx="10"/>
+<text class="ftitle inner-t" x="732" y="458">PROFINET IO</text>
+<rect class="inner" x="995" y="108" width="165" height="314" rx="10"/>
+<text class="ftitle inner-t" x="1007" y="124">五軸本體</text>
+<rect class="inner" x="995" y="442" width="165" height="258" rx="10"/>
+<text class="ftitle inner-t" x="1007" y="458">拋光單元與週邊</text>
+<rect class="box" x="62" y="135" width="200" height="52" rx="6"/>
+<text class="bt" x="162.0" y="157.0" text-anchor="middle">配方表格</text>
+<text class="br" x="162.0" y="174.0" text-anchor="middle">逐行填座標、F、轉速、M 碼</text>
+<rect class="box" x="62" y="215" width="200" height="52" rx="6"/>
+<text class="bt" x="162.0" y="237.0" text-anchor="middle">NC 程式產生器</text>
+<text class="br" x="162.0" y="254.0" text-anchor="middle">依加工模式組出 NC 程式</text>
+<rect class="box" x="62" y="295" width="200" height="52" rx="6"/>
+<text class="bt" x="162.0" y="317.0" text-anchor="middle">FileSvc</text>
+<text class="br" x="162.0" y="334.0" text-anchor="middle">把副程式檔放進 NCK</text>
+<rect class="box" x="62" y="371" width="200" height="46" rx="6"/>
+<text class="bt" x="162.0" y="391.0" text-anchor="middle">位址對照層</text>
+<text class="br" x="162.0" y="406.0" text-anchor="middle">邏輯名稱 → NCK／PLC 變數</text>
+<rect class="box" x="62" y="465" width="200" height="52" rx="6"/>
+<text class="bt" x="162.0" y="487.0" text-anchor="middle">DataSvc 讀寫</text>
+<text class="br" x="162.0" y="504.0" text-anchor="middle">寫面板按鍵、讀加工狀態</text>
+<rect class="box" x="62" y="545" width="200" height="52" rx="6"/>
+<text class="bt" x="162.0" y="567.0" text-anchor="middle">軸座標訂閱</text>
+<text class="br" x="162.0" y="584.0" text-anchor="middle">訂閱刷新＋時間濾波</text>
+<rect class="box mute" x="62" y="625" width="200" height="52" rx="6"/>
+<text class="bt" x="162.0" y="647.0" text-anchor="middle">Operate 警報視窗</text>
+<text class="br" x="162.0" y="664.0" text-anchor="middle">原生畫面，會置頂蓋過 3GL</text>
+<rect class="box" x="360" y="135" width="128" height="52" rx="6"/>
+<text class="bt" x="424.0" y="157.0" text-anchor="middle">加工副程式</text>
+<text class="br" x="424.0" y="174.0" text-anchor="middle">3GL 產生的副程式</text>
+<rect class="box" x="512" y="135" width="118" height="52" rx="6"/>
+<text class="bt" x="571.0" y="157.0" text-anchor="middle">主程式</text>
+<text class="br" x="571.0" y="174.0" text-anchor="middle">CYCLE832 路徑平滑</text>
+<rect class="box" x="360" y="215" width="270" height="52" rx="6"/>
+<text class="bt" x="495.0" y="237.0" text-anchor="middle">逐行加工子程式（每行呼叫一次）</text>
+<text class="br" x="495.0" y="254.0" text-anchor="middle">回報目前行號、交換轉速，執行多軸插補</text>
+<rect class="box" x="360" y="295" width="128" height="52" rx="6"/>
+<text class="bt" x="424.0" y="317.0" text-anchor="middle">TRAORI 運動鏈</text>
+<text class="br" x="424.0" y="334.0" text-anchor="middle">KIN 定位拋・CS 環拋</text>
+<rect class="box" x="512" y="295" width="118" height="52" rx="6"/>
+<text class="bt" x="571.0" y="317.0" text-anchor="middle">插補 IPO</text>
+<text class="br" x="571.0" y="334.0" text-anchor="middle">插補週期＋位置迴路</text>
+<rect class="box" x="360" y="371" width="270" height="46" rx="6"/>
+<text class="bt" x="495.0" y="391.0" text-anchor="middle">NCK ↔ PLC 介面</text>
+<text class="br" x="495.0" y="406.0" text-anchor="middle">R 參數・M 碼・補償設定資料</text>
+<rect class="box" x="360" y="465" width="128" height="52" rx="6"/>
+<text class="bt" x="424.0" y="487.0" text-anchor="middle">面板／HMI 資料區</text>
+<text class="br" x="424.0" y="504.0" text-anchor="middle">面板按鍵、HMI 參數</text>
+<rect class="box" x="512" y="465" width="118" height="52" rx="6"/>
+<text class="bt" x="571.0" y="487.0" text-anchor="middle">M 碼解碼・轉速</text>
+<text class="br" x="571.0" y="504.0" text-anchor="middle">自訂 M 碼 → 變頻器</text>
+<rect class="box" x="360" y="545" width="128" height="52" rx="6"/>
+<text class="bt" x="424.0" y="567.0" text-anchor="middle">電流補償 FB</text>
+<text class="br" x="424.0" y="584.0" text-anchor="middle">比基準電流，增減補償</text>
+<rect class="box" x="512" y="545" width="118" height="52" rx="6"/>
+<text class="bt" x="571.0" y="567.0" text-anchor="middle">線速度補償</text>
+<text class="br" x="571.0" y="584.0" text-anchor="middle">布輪變小就提轉速</text>
+<rect class="box" x="360" y="625" width="270" height="52" rx="6"/>
+<text class="bt" x="495.0" y="647.0" text-anchor="middle">油壓・潤滑互鎖</text>
+<text class="br" x="495.0" y="664.0" text-anchor="middle">油壓未開不准伺服 Enable，定時軌道潤滑</text>
+<rect class="box" x="735" y="135" width="170" height="52" rx="6"/>
+<text class="bt" x="820.0" y="157.0" text-anchor="middle">Line Module</text>
+<text class="br" x="820.0" y="174.0" text-anchor="middle">三相電源 → 直流母線</text>
+<rect class="box" x="735" y="295" width="170" height="52" rx="6"/>
+<text class="bt" x="820.0" y="317.0" text-anchor="middle">Motor Module ×5</text>
+<text class="br" x="820.0" y="334.0" text-anchor="middle">X・Y・Z・B・C 電流迴路</text>
+<rect class="box" x="735" y="465" width="170" height="52" rx="6"/>
+<text class="bt" x="820.0" y="487.0" text-anchor="middle">CU240E-2 變頻器</text>
+<text class="br" x="820.0" y="504.0" text-anchor="middle">收轉速、回報布輪電流</text>
+<rect class="box" x="735" y="625" width="170" height="52" rx="6"/>
+<text class="bt" x="820.0" y="647.0" text-anchor="middle">ET200SP</text>
+<text class="br" x="820.0" y="664.0" text-anchor="middle">油壓、潤滑泵 DI/DQ</text>
+<rect class="box" x="1008" y="135" width="142" height="52" rx="6"/>
+<text class="bt" x="1079.0" y="157.0" text-anchor="middle">X・Y・Z 直線軸</text>
+<text class="br" x="1079.0" y="174.0" text-anchor="middle">伺服＋滾珠螺桿</text>
+<rect class="box" x="1008" y="215" width="142" height="52" rx="6"/>
+<text class="bt" x="1079.0" y="237.0" text-anchor="middle">B・C 旋轉軸</text>
+<text class="br" x="1079.0" y="254.0" text-anchor="middle">經減速機帶動</text>
+<rect class="box" x="1008" y="295" width="142" height="52" rx="6"/>
+<text class="bt" x="1079.0" y="317.0" text-anchor="middle">伺服馬達＋編碼器</text>
+<text class="br" x="1079.0" y="334.0" text-anchor="middle">實際帶動五軸</text>
+<rect class="box mute" x="1008" y="371" width="142" height="46" rx="6"/>
+<text class="bt" x="1079.0" y="391.0" text-anchor="middle">A・CS 虛擬軸</text>
+<text class="br" x="1079.0" y="406.0" text-anchor="middle">只給刀尖跟隨換算</text>
+<rect class="box" x="1008" y="465" width="142" height="52" rx="6"/>
+<text class="bt" x="1079.0" y="487.0" text-anchor="middle">布輪主軸 SP</text>
+<text class="br" x="1079.0" y="504.0" text-anchor="middle">依轉速旋轉拋光</text>
+<rect class="box" x="1008" y="545" width="142" height="52" rx="6"/>
+<text class="bt" x="1079.0" y="567.0" text-anchor="middle">軌道潤滑泵</text>
+<text class="br" x="1079.0" y="584.0" text-anchor="middle">定時潤滑滑軌</text>
+<rect class="box" x="1008" y="625" width="142" height="52" rx="6"/>
+<text class="bt" x="1079.0" y="647.0" text-anchor="middle">油壓單元</text>
+<text class="br" x="1079.0" y="664.0" text-anchor="middle">Z 軸比重、夾治具</text>
+<path class="ln-flow" d="M162,187 V213" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="162" cy="201" r="8"/><text class="badge-t" x="162" y="204.4" text-anchor="middle">1</text>
+<text class="lbl lp" x="176" y="205" text-anchor="start">產生程式</text>
+<path class="ln-flow" d="M162,267 V293" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="162" cy="281" r="8"/><text class="badge-t" x="162" y="284.4" text-anchor="middle">2</text>
+<text class="lbl lp" x="176" y="285" text-anchor="start">寫成 SPF</text>
+<path class="ln-flow" d="M262,321 H307 V161 H358" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="307" cy="250" r="8"/><text class="badge-t" x="307" y="253.4" text-anchor="middle">3</text>
+<text class="lbl lb" x="296" y="250" text-anchor="middle" transform="rotate(-90 296 250)">覆蓋子程式</text>
+<path class="ln-flow" d="M262,491 H358" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="307" cy="491" r="8"/><text class="badge-t" x="307" y="494.4" text-anchor="middle">4</text>
+<text class="lbl lb" x="307" y="481" text-anchor="middle">加工鍵</text>
+<path class="ln-flow" d="M400,465 V424" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="400" cy="433" r="8"/><text class="badge-t" x="400" y="436.4" text-anchor="middle">5</text>
+<text class="lbl lp mono" x="412" y="437" text-anchor="start">NC Start</text>
+<path class="ln-flow" d="M424,187 V213" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="424" cy="201" r="8"/><text class="badge-t" x="424" y="204.4" text-anchor="middle">6</text>
+<text class="lbl lp" x="438" y="205" text-anchor="start">逐行</text>
+<path class="ln-flow" d="M424,267 V293" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="424" cy="281" r="8"/><text class="badge-t" x="424" y="284.4" text-anchor="middle">7</text>
+<text class="lbl lp" x="438" y="285" text-anchor="start">刀尖換算</text>
+<path class="ln-flow" d="M488,321 H510" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="500" cy="321" r="8"/><text class="badge-t" x="500" y="324.4" text-anchor="middle">8</text>
+<text class="lbl lp" x="500" y="291" text-anchor="middle">插補</text>
+<path class="ln-flow" d="M630,321 H733" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="682" cy="321" r="8"/><text class="badge-t" x="682" y="324.4" text-anchor="middle">9</text>
+<text class="lbl lb" x="682" y="311" text-anchor="middle">位置指令</text>
+<path class="ln-flow" d="M905,321 H1006" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="957" cy="321" r="8"/><text class="badge-t" x="957" y="324.4" text-anchor="middle">10</text>
+<text class="lbl lb" x="957" y="311" text-anchor="middle">驅動</text>
+<path class="ln-flow" d="M571,417 V463" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="571" cy="433" r="8"/><text class="badge-t" x="571" y="436.4" text-anchor="middle">11</text>
+<text class="lbl lp" x="583" y="437" text-anchor="start">M 碼・轉速</text>
+<path class="ln-flow" d="M630,491 H733" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="682" cy="491" r="8"/><text class="badge-t" x="682" y="494.4" text-anchor="middle">12</text>
+<text class="lbl lb mono" x="682" y="481" text-anchor="middle">PROFINET</text>
+<path class="ln-flow" d="M905,491 H1006" marker-end="url(#ah-flow)"/>
+<circle class="badge" cx="957" cy="491" r="8"/><text class="badge-t" x="957" y="494.4" text-anchor="middle">13</text>
+<text class="lbl lb" x="957" y="481" text-anchor="middle">驅動布輪</text>
+<path class="ln-alt" d="M62,571 H46 V241 H60" marker-end="url(#ah-alt)"/>
+<text class="lbl la lp" x="38" y="406" text-anchor="middle" transform="rotate(-90 38 406)">結束回報 → 換下一支・修輪</text>
+<path class="ln-alt" d="M488,571 H500 V419" marker-end="url(#ah-alt)"/>
+<text class="lbl la lp mono" x="494" y="537" text-anchor="end">位置補償</text>
+<path class="ln-alt" d="M610,545 V519" marker-end="url(#ah-alt)"/>
+<text class="lbl la lp" x="604" y="537" text-anchor="end">修正轉速</text>
+<path class="ln-gray" d="M512,161 H490" marker-end="url(#ah-gray)"/>
+<text class="lbl lg lp" x="500" y="152" text-anchor="middle">呼叫</text>
+<path class="ln-gray" d="M162,417 V463" marker-end="url(#ah-gray)"/>
+<text class="lbl lg lp" x="172" y="445" text-anchor="start">位址</text>
+<path class="ln-gray" d="M162,517 V543" marker-end="url(#ah-gray)"/>
+<text class="lbl lg lp" x="172" y="535" text-anchor="start">訂閱回呼</text>
+<path class="ln-gray" d="M820,187 V293" marker-end="url(#ah-gray)"/>
+<text class="lbl lg lp" x="828" y="245" text-anchor="start">DC 母線</text>
+<path class="ln-gray" d="M1079,295 V269" marker-end="url(#ah-gray)"/>
+<text class="lbl lg lp" x="1087" y="286" text-anchor="start">帶動</text>
+<path class="ln-gray" d="M1008,339 H907" marker-end="url(#ah-gray)"/>
+<text class="lbl lg lb" x="957" y="357" text-anchor="middle">回授</text>
+<path class="ln-gray" d="M630,651 H733" marker-end="url(#ah-gray)"/>
+<text class="lbl lg lb mono" x="682" y="641" text-anchor="middle">DI/DQ</text>
+<path class="ln-gray" d="M905,663 H1006" marker-end="url(#ah-gray)"/>
+<text class="lbl lg lb" x="957" y="684" text-anchor="middle">油壓啟停</text>
+<path class="ln-gray" d="M905,637 H945 V571 H1006" marker-end="url(#ah-gray)"/>
+<text class="lbl lg lb" x="951" y="560" text-anchor="middle">潤滑</text>
+<rect class="sup-frame" x="15" y="738" width="1170" height="108" rx="10"/>
+<text class="ftitle sup-frame-t" x="27" y="754">全域支援（每個環節都依賴）</text>
+<rect class="box sup" x="30.0" y="766" width="216" height="58" rx="6"/>
+<text class="bt" x="138.0" y="791.0" text-anchor="middle">五軸同動授權卡</text>
+<text class="br" x="138.0" y="808.0" text-anchor="middle">沒有授權就不能使用 TRAORI</text>
+<rect class="box sup" x="261.0" y="766" width="216" height="58" rx="6"/>
+<text class="bt" x="369.0" y="791.0" text-anchor="middle">伺服優化 CYCLE832</text>
+<text class="br" x="369.0" y="808.0" text-anchor="middle">單軸 → 插補 → 虛擬軸，依序調機</text>
+<rect class="box sup" x="492.0" y="766" width="216" height="58" rx="6"/>
+<text class="bt" x="600.0" y="791.0" text-anchor="middle">使用者權限</text>
+<text class="br" x="600.0" y="808.0" text-anchor="middle">管理員・操作員分級操作</text>
+<rect class="box sup" x="723.0" y="766" width="216" height="58" rx="6"/>
+<text class="bt" x="831.0" y="791.0" text-anchor="middle">參數備份 Archive</text>
+<text class="br" x="831.0" y="808.0" text-anchor="middle">整機存檔與差異比對</text>
+<rect class="box sup" x="954.0" y="766" width="216" height="58" rx="6"/>
+<text class="bt" x="1062.0" y="791.0" text-anchor="middle">警報與診斷</text>
+<text class="br" x="1062.0" y="808.0" text-anchor="middle">PLC 警報字・Operate 警報畫面</text>
+</svg>
+</div>
+<p class="hint">手機上可左右滑動圖片。虛線方框代表邏輯範圍，底色方框代表實體設備。</p>
+
+<section class="cards">
+<article class="card">
+<h2><small>FLOW</small>主要流程逐步說明</h2>
+<ol class="steps">
+<li><span class="n">1</span><span>操作員在 HMI 的配方表格填好每一行（座標、進給、布輪轉速、C 軸轉速、M 碼），按下執行，程式產生器依加工模式（單支、多支、修輪、刀尖跟隨…）組出 NC 程式。</span></li>
+<li><span class="n">2</span><span>程式先寫成本機的副程式檔。</span></li>
+<li><span class="n">3</span><span>透過 Siemens <code>FileSvc</code> 把檔案放進 NCK，覆蓋上一版。</span></li>
+<li><span class="n">4</span><span>透過 <code>DataSvc</code> 對 PLC 的面板按鍵送出一個脈衝，等同按下 Cycle Start。</span></li>
+<li><span class="n">5</span><span>PLC 把啟動訊號交給 NCK，主程式先開啟 <code>CYCLE832</code> 讓路徑平滑，再呼叫加工副程式。</span></li>
+<li><span class="n">6</span><span>副程式每一行都呼叫一次逐行加工子程式，並回報目前行號，HMI 才知道跑到第幾行。</span></li>
+<li><span class="n">7</span><span>依設定開啟 <code>TRAORI</code>：C 軸不轉用定位拋，C 軸持續轉用環拋（虛擬軸）。座標以布輪接觸點為準，換算成實體軸位置。</span></li>
+<li><span class="n">8</span><span>NCK 插補器週期性算出各軸目標位置，位置迴路以更短的週期追蹤。</span></li>
+<li><span class="n">9</span><span>位置指令經 DRIVE-CLiQ 送到 S120 的 Motor Module。</span></li>
+<li><span class="n">10</span><span>Motor Module 驅動五軸伺服馬達，編碼器即時回授位置。</span></li>
+<li><span class="n">11</span><span>同一行裡的 M 碼與轉速交給 PLC 解碼（一行可帶多個 M 碼，PLC 要並行處理）。</span></li>
+<li><span class="n">12</span><span>PLC 透過 PROFINET 報文把轉速送到 CU240E 變頻器。</span></li>
+<li><span class="n">13</span><span>變頻器驅動布輪主軸旋轉，開始拋光。</span></li>
+</ol>
+</article>
+
+<article class="card">
+<h2><small>EASY TO MIX UP</small>容易搞混的選擇</h2>
+<div class="pair">
+<h3>定位拋 vs 環拋</h3>
+<div class="vs">
+<div><b>定位拋</b>C 軸只定位不轉，五軸一起插補。</div>
+<div><b>環拋</b>C 軸當主軸持續旋轉，插補改用虛擬軸，讓接觸點不受旋轉影響。</div>
+</div>
+</div>
+<div class="pair">
+<h3>FileSvc vs DataSvc</h3>
+<div class="vs">
+<div><b>FileSvc</b>搬「檔案」：把整支副程式放進 NCK。</div>
+<div><b>DataSvc</b>讀寫「變數」：按鍵、R 參數、PLC 數值、訂閱座標。</div>
+</div>
+</div>
+<div class="pair">
+<h3>電流補償 vs 線速度補償</h3>
+<div class="vs">
+<div><b>電流補償</b>改「位置」：布輪負載電流偏離基準，就沿刀具方向把布輪推近或拉遠。</div>
+<div><b>線速度補償</b>改「轉速」：布輪磨小、表面速度下降，就提高轉速保持拋光均勻。</div>
+</div>
+</div>
+<div class="pair">
+<h3><span class="alt-note">橘色虛線</span>是什麼</h3>
+<p>是正常流程旁的修正迴路：兩種補償在加工中持續微調；HMI 收到程式結束的回報後，會自動接下一支，或在計數到達時切入修輪程式。</p>
+</div>
+</article>
+
+<article class="card">
+<h2><small>LAYERS</small>每一區的重點</h2>
+<dl class="layers">
+<dt>操作端 IPC<span>C# · Create MyHMI/3GL</span></dt>
+<dd>所有變數都經過一層位址對照，畫面程式只用邏輯名稱，不直接寫死 NCK／PLC 位址，換機種或多站時只改對照表。實作上也踩過 DataSvc 的型別轉換坑（整數 0 寫不進去、REAL 讀回來是位元排列）。</dd>
+<dt>NCK<span>主程式 · 副程式 · TRAORI</span></dt>
+<dd>HMI 只負責產生副程式，真正的動作邏輯在 NC 端的逐行子程式。運動鏈參數設錯，刀尖跟隨就會整個偏掉。</dd>
+<dt>PLC<span>M 碼 · 補償 · 互鎖</span></dt>
+<dd>NCK 和外部設備之間的翻譯官：解 M 碼、轉送轉速、計算兩種補償、守住油壓互鎖。油壓沒開，伺服不能 Enable。</dd>
+<dt>驅動與 IO<span>S120 · CU240E · ET200SP</span></dt>
+<dd>五軸伺服走 DRIVE-CLiQ，布輪變頻器與週邊 IO 走 PROFINET。兩條網路互不相干，查問題時先分清楚是哪一條。</dd>
+<dt>機台機構<span>X Y Z B C + 虛擬軸</span></dt>
+<dd>虛擬軸只存在於數學運算中，用來讓接觸點固定不動；Z 軸較重，靠油壓平衡避免馬達過載。</dd>
+</dl>
+</article>
+</section>
+</div>
+</body></html>

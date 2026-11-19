@@ -145,8 +145,8 @@ export default function Hero() {
           `}
         >
           {[
-            'SINUMERIK ONE', 'OPC-UA', 'TIA Portal',
-            'FastAPI', 'React', 'TimescaleDB', 'Ollama'
+            'SINUMERIK ONE', 'OPC UA', 'TIA Portal',
+            'FastAPI', 'React', 'RAG', 'MCP', 'AWS'
           ].map((tag) => (
             <span
               key={tag}

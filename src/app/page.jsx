@@ -1,11 +1,11 @@
-import Navbar from '@/components/Navbar'
-import Hero from '@/components/Hero'
-import Skills from '@/components/Skills'
-import FeaturedProjects from '@/components/FeaturedProjects'
-import CaseStudiesPreview from '@/components/CaseStudiesPreview'
-import OtherProjects from '@/components/OtherProjects'
-import Experience from '@/components/Experience'
-import Contact from '@/components/Contact'
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
+import Skills from "@/components/Skills";
+import FeaturedProjects from "@/components/FeaturedProjects";
+import CaseStudiesPreview from "@/components/CaseStudiesPreview";
+import OtherProjects from "@/components/OtherProjects";
+import Experience from "@/components/Experience";
+import Contact from "@/components/Contact";
 
 export default function Home() {
   return (
@@ -21,5 +21,5 @@ export default function Home() {
         <Contact />
       </main>
     </div>
-  )
+  );
 }

@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BFX Lending Bot 架構</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f5f1; --surface:#ffffff; --ink:#1c1f25; --muted:#5a606c;
+  --zone-fill:#eceff5; --zone-stroke:#c8cfdb; --logical:#8a93a3;
+  --app-fill:#f9fafc; --db-fill:#fbf6ea; --db-stroke:#d8c6a0; --ext-fill:#f1f3f7;
+  --main:#2257d6; --alt:#c94a12; --gray:#9aa0aa;
+  --support:#0d8466; --support-fill:#e7f4ef;
+  --badge-ink:#ffffff; --card-border:#e1e3e8; --code-bg:#eef0f4;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111317; --surface:#1a1d23; --ink:#e6e8ec; --muted:#a2a8b4;
+    --zone-fill:#191e27; --zone-stroke:#2e3645; --logical:#6b7484;
+    --app-fill:#14171d; --db-fill:#221e15; --db-stroke:#5d5038; --ext-fill:#1c2029;
+    --main:#6ea2ff; --alt:#ff8b52; --gray:#6b7280;
+    --support:#3dcf9f; --support-fill:#14251f;
+    --badge-ink:#0d1220; --card-border:#2a2f38; --code-bg:#232832;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111317; --surface:#1a1d23; --ink:#e6e8ec; --muted:#a2a8b4;
+  --zone-fill:#191e27; --zone-stroke:#2e3645; --logical:#6b7484;
+  --app-fill:#14171d; --db-fill:#221e15; --db-stroke:#5d5038; --ext-fill:#1c2029;
+  --main:#6ea2ff; --alt:#ff8b52; --gray:#6b7280;
+  --support:#3dcf9f; --support-fill:#14251f;
+  --badge-ink:#0d1220; --card-border:#2a2f38; --code-bg:#232832;
+}
+*{box-sizing:border-box}
+html,body{margin:0;overflow-x:hidden}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;line-height:1.7}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:1.7rem;margin:0 0 6px}
+.q{color:var(--muted);margin:0 0 4px}
+.q b{color:var(--ink)}
+.meta{font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);margin:0 0 18px}
+.figure{background:var(--surface);border:1px solid var(--card-border);border-radius:14px;padding:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.figure svg{display:block;width:100%;min-width:1000px;height:auto}
+.hint{display:none;font-size:.78rem;color:var(--muted);margin:6px 2px 0}
+@media (max-width:1040px){.hint{display:block}}
+.zone{fill:var(--zone-fill);stroke:var(--zone-stroke);stroke-width:1}
+.sqlite{fill:var(--db-fill);stroke:var(--db-stroke)}
+.app{fill:var(--app-fill);stroke:var(--zone-stroke);stroke-width:1.4}
+.logical{fill:none;stroke:var(--logical);stroke-width:1.2;stroke-dasharray:6 5}
+.box{fill:var(--surface);stroke:var(--zone-stroke);stroke-width:1.2}
+.db{stroke:var(--db-stroke)}
+.ext{fill:var(--ext-fill)}
+.sup-frame{fill:var(--support-fill);stroke:var(--support);stroke-width:1.6}
+.sup-box{stroke:var(--support)}
+.badge{fill:var(--main)}
+.badge-t{fill:var(--badge-ink);font:600 9.5px "JetBrains Mono",monospace}
+.bn{fill:var(--ink);font:700 12.5px "Noto Sans TC",sans-serif}
+.br{fill:var(--muted);font:400 10.5px "Noto Sans TC",sans-serif}
+.zone-t{fill:var(--ink);font:700 13px "Noto Sans TC",sans-serif}
+.zone-s{fill:var(--muted);font:400 10.5px "JetBrains Mono",monospace}
+.app-t{fill:var(--ink);font:700 13px "Noto Sans TC",sans-serif}
+.frame-t{fill:var(--muted);font:500 11.5px "Noto Sans TC",sans-serif}
+.pre-t{fill:var(--muted);font:500 10.5px "JetBrains Mono","Noto Sans TC",monospace}
+.sup-t{fill:var(--support);font:700 14px "Noto Sans TC",sans-serif}
+.lg{fill:var(--muted);font:400 11px "JetBrains Mono","Noto Sans TC",monospace}
+.lb{fill:var(--main);font:500 10px "JetBrains Mono","Noto Sans TC",monospace}
+.lb-alt{fill:var(--alt);font:500 10px "JetBrains Mono","Noto Sans TC",monospace}
+.lb-gray{fill:var(--muted);font:400 10px "JetBrains Mono","Noto Sans TC",monospace}
+.ln-main{stroke:var(--main);stroke-width:1.8;fill:none}
+.ln-alt{stroke:var(--alt);stroke-width:1.5;stroke-dasharray:5 4;fill:none}
+.ln-gray{stroke:var(--gray);stroke-width:1;fill:none}
+.f-main{fill:var(--main)} .f-alt{fill:var(--alt)} .f-gray{fill:var(--gray)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--surface);border:1px solid var(--card-border);border-radius:14px;padding:18px 20px;min-width:0}
+.card.wide{grid-column:1/-1}
+.card h2{font-size:1.05rem;margin:0 0 10px}
+.card h3{font-size:.92rem;margin:14px 0 4px}
+.card h3:first-of-type{margin-top:0}
+.card ol{margin:0;padding-left:0;list-style:none;font-size:.88rem}
+.card ol li{display:flex;gap:8px;margin:0 0 6px}
+.card ol li .n{font-family:"JetBrains Mono",monospace;color:var(--main);font-weight:600;flex:0 0 auto}
+.card p,.card li{font-size:.88rem}
+.card ul{padding-left:18px;margin:4px 0}
+.tbl{width:100%;border-collapse:collapse;font-size:.84rem}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:7px 6px;border-bottom:1px solid var(--card-border)}
+.tbl th{color:var(--muted);font-weight:500;font-size:.78rem}
+.tbl td:first-child{font-weight:700}
+code{font-family:"JetBrains Mono",monospace;font-size:.82em;background:var(--code-bg);padding:1px 5px;border-radius:4px;word-break:break-word}
+pre{font-family:"JetBrains Mono",monospace;font-size:.76rem;background:var(--code-bg);border-radius:8px;padding:10px 12px;overflow-x:auto;margin:6px 0 10px;line-height:1.55}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 24px}
+.tag{font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--support);border:1px solid var(--support);border-radius:999px;padding:0 7px;margin-left:6px;white-space:nowrap}
+.warn{color:var(--alt);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>BFX Lending Bot 架構</h1>
+  <p class="q">這張圖回答：<b>從輸入授權到資金掛上 Bitfinex、再顯示到畫面上，經過哪些模組？每一層的安全與容錯在哪裡？</b></p>
+  <p class="meta">讀者：開發者本人、未來維護者與作品集面試 · 版本 v4.2.0 · Electron 40 + React/Vite + Node.js + better-sqlite3 · 授權伺服器 AWS Lambda（us-east-1，SAM 部署）· 2026/11/05 更新</p>
+
+  <div class="figure">
+    <svg viewBox="0 0 1200 944" role="img" aria-label="BFX Lending Bot 完整架構圖">
+      <defs>
+        <marker id="mMain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="f-main"/></marker>
+        <marker id="mAlt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="f-alt"/></marker>
+        <marker id="mGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="f-gray"/></marker>
+      </defs>
+<line x1="24" y1="24" x2="64" y2="24" class="ln-main" marker-end="url(#mMain)"/>
+<text x="72" y="28" class="lg" text-anchor="start">主要流程 ①→⑱</text>
+<line x1="210" y1="24" x2="250" y2="24" class="ln-alt" marker-end="url(#mAlt)"/>
+<text x="258" y="28" class="lg" text-anchor="start">備援／例外路徑</text>
+<line x1="380" y1="24" x2="420" y2="24" class="ln-gray" marker-end="url(#mGray)"/>
+<text x="428" y="28" class="lg" text-anchor="start">一般連線</text>
+<rect x="500" y="15" width="28" height="18" rx="4" class="sup-frame"/>
+<text x="536" y="28" class="lg" text-anchor="start">全程支援</text>
+<rect x="610" y="15" width="28" height="18" rx="4" class="logical"/>
+<text x="646" y="28" class="lg" text-anchor="start">邏輯範圍</text>
+<rect x="720" y="15" width="28" height="18" rx="4" class="zone"/>
+<text x="756" y="28" class="lg" text-anchor="start">程序／區域</text>
+<rect x="840" y="15" width="28" height="18" rx="4" class="box"/>
+<text x="876" y="28" class="lg" text-anchor="start">元件</text>
+<rect x="12" y="52" width="964" height="756" rx="14" class="logical"/>
+<text x="24" y="69" class="frame-t" text-anchor="start">使用者電腦（Windows／macOS）</text>
+<rect x="24" y="78" width="940" height="722" rx="12" class="app"/>
+<text x="36" y="96" class="app-t" text-anchor="start">Electron App · BFX Lending Bot v4.2.0</text>
+<rect x="984" y="52" width="206" height="756" rx="14" class="logical"/>
+<text x="998" y="69" class="frame-t" text-anchor="start">雲端服務</text>
+<rect x="32" y="106" width="924" height="240" rx="10" class="zone"/>
+<text x="48" y="126" class="zone-t" text-anchor="start">Bot 子程序</text>
+<text x="126" y="126" class="zone-s" text-anchor="start">bot-runner.js（fork）</text>
+<rect x="32" y="360" width="924" height="90" rx="10" class="zone sqlite"/>
+<text x="48" y="382" class="zone-t" text-anchor="start">SQLite 本機資料庫</text>
+<text x="48" y="400" class="zone-s" text-anchor="start">better-sqlite3</text>
+<rect x="32" y="464" width="924" height="176" rx="10" class="zone"/>
+<text x="48" y="484" class="zone-t" text-anchor="start">Main 主程序</text>
+<rect x="32" y="652" width="924" height="28" rx="6" class="logical"/>
+<text x="748" y="670" class="pre-t" text-anchor="start">preload.js 白名單橋接</text>
+<rect x="32" y="692" width="924" height="98" rx="10" class="zone"/>
+<text x="48" y="710" class="zone-t" text-anchor="start">畫面 Renderer</text>
+<rect x="40" y="172" width="146" height="56" rx="8" class="box"/>
+<text x="50" y="194" class="bn" text-anchor="start">Watchdog 守護</text>
+<text x="50" y="213" class="br" text-anchor="start">1 分鐘心跳・5 分鐘全同步</text>
+<rect x="232" y="172" width="146" height="56" rx="8" class="box"/>
+<text x="242" y="194" class="bn" text-anchor="start">WS 事件監聽</text>
+<text x="242" y="213" class="br" text-anchor="start">餘額≥門檻→防抖 3 秒</text>
+<rect x="424" y="172" width="146" height="56" rx="8" class="box"/>
+<text x="434" y="194" class="bn" text-anchor="start">strategy 定價</text>
+<text x="434" y="213" class="br" text-anchor="start">VWAP・EMA・波動率</text>
+<rect x="616" y="172" width="146" height="56" rx="8" class="box"/>
+<text x="626" y="194" class="bn" text-anchor="start">掛單／撤單引擎</text>
+<text x="626" y="213" class="br" text-anchor="start">二分法・階梯・防護</text>
+<rect x="808" y="172" width="146" height="56" rx="8" class="box"/>
+<text x="818" y="194" class="bn" text-anchor="start">bfx.service</text>
+<text x="818" y="213" class="br" text-anchor="start">REST 封裝・熔斷 30 秒</text>
+<rect x="232" y="272" width="146" height="56" rx="8" class="box"/>
+<text x="242" y="294" class="bn" text-anchor="start">bot-runner 啟動</text>
+<text x="242" y="313" class="br" text-anchor="start">校時・API Key 權限檢查</text>
+<rect x="424" y="272" width="146" height="56" rx="8" class="box"/>
+<text x="434" y="294" class="bn" text-anchor="start">sync・stats</text>
+<text x="434" y="313" class="br" text-anchor="start">帳本同步・資產快照</text>
+<rect x="808" y="272" width="146" height="56" rx="8" class="box"/>
+<text x="818" y="294" class="bn" text-anchor="start">telegram.service</text>
+<text x="818" y="313" class="br" text-anchor="start">啟動・異常推播</text>
+<rect x="424" y="390" width="146" height="50" rx="8" class="box db"/>
+<text x="434" y="412" class="bn" text-anchor="start">stats・ledgers</text>
+<text x="434" y="431" class="br" text-anchor="start">資產快照・利息帳本</text>
+<rect x="616" y="390" width="146" height="50" rx="8" class="box db"/>
+<text x="626" y="412" class="bn" text-anchor="start">configs・offers</text>
+<text x="626" y="431" class="br" text-anchor="start">設定・密文金鑰・掛單</text>
+<rect x="808" y="390" width="146" height="50" rx="8" class="box db"/>
+<text x="818" y="412" class="bn" text-anchor="start">lifecycle・logs</text>
+<text x="818" y="431" class="br" text-anchor="start">借出週期・日誌・EULA</text>
+<rect x="232" y="498" width="146" height="56" rx="8" class="box"/>
+<text x="242" y="520" class="bn" text-anchor="start">main.js 子程序管理</text>
+<text x="242" y="539" class="br" text-anchor="start">fork・崩潰重啟・警告暫存</text>
+<rect x="616" y="498" width="146" height="56" rx="8" class="box"/>
+<text x="626" y="520" class="bn" text-anchor="start">safeStorage</text>
+<text x="626" y="539" class="br" text-anchor="start">OS 金鑰庫加解密</text>
+<rect x="808" y="498" width="146" height="56" rx="8" class="box"/>
+<text x="818" y="520" class="bn" text-anchor="start">license.service</text>
+<text x="818" y="539" class="br" text-anchor="start">問 Lambda・24h 快取</text>
+<rect x="40" y="578" width="722" height="50" rx="8" class="box"/>
+<text x="50" y="599" class="bn" text-anchor="start">server.js IPC handlers</text>
+<text x="50" y="618" class="br" text-anchor="start">api:* 查詢・設定・匯出・授權・更新檢查・EULA（參數白名單驗證）</text>
+<rect x="40" y="722" width="146" height="56" rx="8" class="box"/>
+<text x="50" y="744" class="bn" text-anchor="start">儀表板</text>
+<text x="50" y="763" class="br" text-anchor="start">ActiveOffers・AssetChart</text>
+<rect x="232" y="722" width="146" height="56" rx="8" class="box"/>
+<text x="242" y="744" class="bn" text-anchor="start">HistoryPanel</text>
+<text x="242" y="763" class="br" text-anchor="start">對帳・收益日曆</text>
+<rect x="424" y="722" width="146" height="56" rx="8" class="box"/>
+<text x="434" y="744" class="bn" text-anchor="start">AnalysisPanel</text>
+<text x="434" y="763" class="br" text-anchor="start">7 天策略健檢</text>
+<rect x="616" y="722" width="146" height="56" rx="8" class="box"/>
+<text x="626" y="744" class="bn" text-anchor="start">設定・警告橫幅</text>
+<text x="626" y="763" class="br" text-anchor="start">參數・金鑰・時間偏差</text>
+<rect x="808" y="722" width="146" height="56" rx="8" class="box"/>
+<text x="818" y="744" class="bn" text-anchor="start">LicenseGate</text>
+<text x="818" y="763" class="br" text-anchor="start">授權輸入・EULA</text>
+<rect x="1060" y="130" width="122" height="40" rx="8" class="box ext"/>
+<text x="1070" y="152" class="bn" text-anchor="start">Bitfinex WS</text>
+<text x="1070" y="171" class="br" text-anchor="start"></text>
+<rect x="1060" y="180" width="122" height="40" rx="8" class="box ext"/>
+<text x="1070" y="202" class="bn" text-anchor="start">Bitfinex REST</text>
+<text x="1070" y="221" class="br" text-anchor="start"></text>
+<rect x="1060" y="280" width="122" height="40" rx="8" class="box ext"/>
+<text x="1070" y="302" class="bn" text-anchor="start">Telegram</text>
+<text x="1070" y="321" class="br" text-anchor="start"></text>
+<rect x="1060" y="498" width="122" height="56" rx="8" class="box ext"/>
+<text x="1070" y="520" class="bn" text-anchor="start">License Lambda</text>
+<text x="1070" y="539" class="br" text-anchor="start">us-east-1・SSM Key</text>
+<rect x="1060" y="622" width="122" height="40" rx="8" class="box ext"/>
+<text x="1070" y="644" class="bn" text-anchor="start">Whop API</text>
+<text x="1070" y="663" class="br" text-anchor="start"></text>
+<line x1="881.0" y1="722" x2="881.0" y2="554" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="881.0" cy="674" r="8" class="badge"/>
+<text x="881.0" y="677.5" class="badge-t" text-anchor="middle">1</text>
+<text x="889.0" y="606" class="lb" text-anchor="start">驗證授權</text>
+<line x1="954" y1="520" x2="1060" y2="520" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="1022" cy="520" r="8" class="badge"/>
+<text x="1022" y="523.5" class="badge-t" text-anchor="middle">2</text>
+<text x="1022" y="509" class="lb" text-anchor="middle">序號+機碼</text>
+<line x1="1060" y1="538" x2="954" y2="538" class="ln-alt" marker-end="url(#mAlt)"/>
+<text x="1022" y="554" class="lb-alt" text-anchor="middle">503 走快取</text>
+<line x1="1121.0" y1="554" x2="1121.0" y2="622" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="1121.0" cy="588" r="8" class="badge"/>
+<text x="1121.0" y="591.5" class="badge-t" text-anchor="middle">3</text>
+<text x="1107.0" y="592" class="lb" text-anchor="end">查詢・綁定</text>
+<line x1="808" y1="526" x2="762" y2="526" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="785.0" cy="526" r="8" class="badge"/>
+<text x="785.0" y="529.5" class="badge-t" text-anchor="middle">4</text>
+<text x="785.0" y="514" class="lb" text-anchor="middle">授權</text>
+<line x1="616" y1="526" x2="378" y2="526" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="497.0" cy="526" r="8" class="badge"/>
+<text x="497.0" y="529.5" class="badge-t" text-anchor="middle">5</text>
+<text x="497.0" y="514" class="lb" text-anchor="middle">解密金鑰</text>
+<line x1="272" y1="498" x2="272" y2="328" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="272" cy="420" r="8" class="badge"/>
+<text x="272" y="423.5" class="badge-t" text-anchor="middle">6</text>
+<text x="260" y="424" class="lb" text-anchor="end">fork</text>
+<line x1="338" y1="328" x2="338" y2="498" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="338" cy="420" r="8" class="badge"/>
+<text x="338" y="423.5" class="badge-t" text-anchor="middle">15</text>
+<text x="328" y="424" class="lb" text-anchor="end">日誌</text>
+<line x1="360" y1="498" x2="360" y2="328" class="ln-alt" marker-end="url(#mAlt)"/>
+<text x="366" y="396" class="lb-alt" text-anchor="start">崩潰重啟</text>
+<line x1="305.0" y1="272" x2="305.0" y2="228" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="305.0" cy="250" r="8" class="badge"/>
+<text x="305.0" y="253.5" class="badge-t" text-anchor="middle">7</text>
+<text x="317.0" y="254" class="lb" text-anchor="start">建立 WS</text>
+<path d="M1060,150 H305.0 V172" class="ln-main" fill="none" marker-end="url(#mMain)"/>
+<circle cx="1022" cy="150" r="8" class="badge"/>
+<text x="1022" y="153.5" class="badge-t" text-anchor="middle">8</text>
+<text x="1022" y="140" class="lb" text-anchor="middle">餘額變動</text>
+<line x1="378" y1="194" x2="424" y2="194" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="401.0" cy="194" r="8" class="badge"/>
+<text x="401.0" y="197.5" class="badge-t" text-anchor="middle">9</text>
+<text x="401.0" y="182" class="lb" text-anchor="middle">觸發</text>
+<line x1="570" y1="194" x2="616" y2="194" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="593.0" cy="194" r="8" class="badge"/>
+<text x="593.0" y="197.5" class="badge-t" text-anchor="middle">10</text>
+<text x="593.0" y="182" class="lb" text-anchor="middle">底價</text>
+<line x1="762" y1="194" x2="808" y2="194" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="785.0" cy="194" r="8" class="badge"/>
+<text x="785.0" y="197.5" class="badge-t" text-anchor="middle">11</text>
+<text x="785.0" y="182" class="lb" text-anchor="middle">掛撤</text>
+<line x1="954" y1="200" x2="1060" y2="200" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="1022" cy="200" r="8" class="badge"/>
+<text x="1022" y="203.5" class="badge-t" text-anchor="middle">12</text>
+<text x="1022" y="215" class="lb" text-anchor="middle">簽章請求</text>
+<line x1="808" y1="214" x2="762" y2="214" class="ln-alt" marker-end="url(#mAlt)"/>
+<text x="785.0" y="226" class="lb-alt" text-anchor="middle">null</text>
+<line x1="186" y1="214" x2="232" y2="214" class="ln-alt" marker-end="url(#mAlt)"/>
+<text x="209.0" y="226" class="lb-alt" text-anchor="middle">重連</text>
+<line x1="689.0" y1="228" x2="689.0" y2="390" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="689.0" cy="300" r="8" class="badge"/>
+<text x="689.0" y="303.5" class="badge-t" text-anchor="middle">13</text>
+<text x="701.0" y="304" class="lb" text-anchor="start">寫入掛單</text>
+<line x1="497.0" y1="328" x2="497.0" y2="390" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="497.0" cy="353" r="8" class="badge"/>
+<text x="497.0" y="356.5" class="badge-t" text-anchor="middle">14</text>
+<text x="509.0" y="366" class="lb" text-anchor="start">快照帳本</text>
+<line x1="305.0" y1="554" x2="305.0" y2="578" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="333.0" cy="566" r="8" class="badge"/>
+<text x="333.0" y="569.5" class="badge-t" text-anchor="middle">16</text>
+<text x="345.0" y="570" class="lb" text-anchor="start">轉發</text>
+<line x1="170" y1="578" x2="170" y2="450" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="170" cy="520" r="8" class="badge"/>
+<text x="170" y="523.5" class="badge-t" text-anchor="middle">17</text>
+<text x="158" y="524" class="lb" text-anchor="end">查詢</text>
+<line x1="170" y1="628" x2="170" y2="722" class="ln-main" marker-end="url(#mMain)"/>
+<circle cx="170" cy="646" r="8" class="badge"/>
+<text x="170" y="649.5" class="badge-t" text-anchor="middle">18</text>
+<text x="182" y="710" class="lb" text-anchor="start">推送畫面</text>
+<line x1="726" y1="628" x2="726" y2="722" class="ln-alt" marker-end="url(#mAlt)"/>
+<text x="734" y="710" class="lb-alt" text-anchor="start">偏差警告</text>
+<line x1="305.0" y1="722" x2="305.0" y2="628" class="ln-gray" marker-end="url(#mGray)"/>
+<text x="313.0" y="710" class="lb-gray" text-anchor="start">查詢</text>
+<line x1="497.0" y1="722" x2="497.0" y2="628" class="ln-gray" marker-end="url(#mGray)"/>
+<text x="505.0" y="710" class="lb-gray" text-anchor="start">查詢</text>
+<line x1="652" y1="722" x2="652" y2="628" class="ln-gray" marker-end="url(#mGray)"/>
+<text x="660" y="710" class="lb-gray" text-anchor="start">存設定</text>
+<line x1="652" y1="498" x2="652" y2="440" class="ln-gray" marker-end="url(#mGray)"/>
+<text x="660" y="478" class="lb-gray" text-anchor="start">讀密文</text>
+<line x1="954" y1="300" x2="1060" y2="300" class="ln-gray" marker-end="url(#mGray)"/>
+<text x="1022" y="294" class="lb-gray" text-anchor="middle">推播</text>
+<rect x="12" y="828" width="1178" height="104" rx="14" class="sup-frame"/>
+<text x="28" y="872" class="sup-t" text-anchor="start">全程支援</text>
+<text x="28" y="892" class="zone-s" text-anchor="start">Cross-cutting</text>
+<rect x="140" y="850" width="160" height="58" rx="8" class="box sup-box"/>
+<text x="150" y="872" class="bn" text-anchor="start">安全邊界</text>
+<text x="150" y="891" class="br" text-anchor="start">contextIsolation・白名單</text>
+<rect x="316" y="850" width="160" height="58" rx="8" class="box sup-box"/>
+<text x="326" y="872" class="bn" text-anchor="start">金鑰保護</text>
+<text x="326" y="891" class="br" text-anchor="start">SSM・safeStorage・遮罩</text>
+<rect x="492" y="850" width="160" height="58" rx="8" class="box sup-box"/>
+<text x="502" y="872" class="bn" text-anchor="start">最小權限</text>
+<text x="502" y="891" class="br" text-anchor="start">拒絕提幣／交易權限</text>
+<rect x="668" y="850" width="160" height="58" rx="8" class="box sup-box"/>
+<text x="678" y="872" class="bn" text-anchor="start">韌性機制</text>
+<text x="678" y="891" class="br" text-anchor="start">熔斷・逾時・null 合約</text>
+<rect x="844" y="850" width="160" height="58" rx="8" class="box sup-box"/>
+<text x="854" y="872" class="bn" text-anchor="start">自動化測試</text>
+<text x="854" y="891" class="br" text-anchor="start">Jest 217・Vitest 38・λ 29</text>
+<rect x="1020" y="850" width="160" height="58" rx="8" class="box sup-box"/>
+<text x="1030" y="872" class="bn" text-anchor="start">發佈流程</text>
+<text x="1030" y="891" class="br" text-anchor="start">推 tag 自動打包發佈</text>
+    </svg>
+  </div>
+  <p class="hint">← 圖片可左右滑動 →</p>
+
+  <div class="cards">
+    <section class="card">
+      <h2>主要流程逐步說明</h2>
+      <ol>
+        <li><span class="n">①</span><span>LicenseGate 把序號透過 preload 白名單的 <code>api:license:verify</code> 送到主程序（空白或非字串直接擋下）。</span></li>
+        <li><span class="n">②</span><span>license.service 把「序號 + 機碼 + 本機綁定紀錄 + 版本」POST 到授權伺服器（Lambda Function URL），15 秒逾時。<b>客戶端不再持有任何 Whop Key。</b></span></li>
+        <li><span class="n">③</span><span>Lambda 從 SSM 讀出 Whop Key（暫存在記憶體），向 Whop 查詢序號、比對機碼；首次啟用時合併 metadata 後寫回綁定。只回傳結果代碼，不回傳 Whop 原始資料。</span></li>
+        <li><span class="n">④</span><span>授權通過後，前端呼叫 <code>api:license:activate</code>，主程序開始啟動 Bot。</span></li>
+        <li><span class="n">⑤</span><span>從 SQLite 讀出 Bitfinex API Key 密文，交給 safeStorage 解密；解密失敗回傳 <code>null</code>，直接中止，不啟動子程序。</span></li>
+        <li><span class="n">⑥</span><span><code>fork('bot-runner.js')</code>，金鑰只放在子程序的環境變數；子程序異常結束時 3 秒後自動重啟。</span></li>
+        <li><span class="n">⑦</span><span>啟動檢查：校時（timeapi.io，失敗改用 Bitfinex Date 標頭）、API Key 權限檢查（有提幣／交易權限就退出），然後建立 WebSocket。</span></li>
+        <li><span class="n">⑧</span><span>Bitfinex WS 推送 funding 錢包變動，可用餘額超過門檻就觸發。</span></li>
+        <li><span class="n">⑨</span><span>防抖 3 秒後執行 <code>executeStrategy</code>（4 分鐘逾時保護）。</span></li>
+        <li><span class="n">⑩</span><span>定價：短天期 VWAP、EMA 動態基準、多模型取最強底價、波動率加成，再用 <code>calculatePeriod</code> 選天期。</span></li>
+        <li><span class="n">⑪</span><span>掛撤單：資金 ≥ 1000 用階梯、否則二分法；舊單依時間門檻、利用率、絕對底線、賤賣防護決定是否撤回。</span></li>
+        <li><span class="n">⑫</span><span>bfx.service 簽章送出 REST 請求，每筆間隔 0.2 秒避免被拒。</span></li>
+        <li><span class="n">⑬</span><span>用 Bitfinex 回傳的真實 Offer ID 寫入 offers；解析失敗就拒寫。</span></li>
+        <li><span class="n">⑭</span><span>sync／stats 同步帳本與利息、寫資產快照與 credit 生命週期。</span></li>
+        <li><span class="n">⑮</span><span>子程序用 stdout／stderr 送日誌、用 <code>process.send</code> 送 system-alert。</span></li>
+        <li><span class="n">⑯</span><span>main.js 遮罩敏感字串（<code>sanitizeLog</code>）後寫 logs，並暫存系統警告。</span></li>
+        <li><span class="n">⑰</span><span>server.js 的 IPC handler 依前端請求查詢 SQLite。</span></li>
+        <li><span class="n">⑱</span><span>透過 <code>webContents.send</code> 推送 bot-log、bot-status-update、system-alert 到畫面。</span></li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>容易搞混的選擇</h2>
+      <table class="tbl">
+        <thead><tr><th>容易混淆</th><th>差別</th><th>本專案的選擇</th></tr></thead>
+        <tbody>
+          <tr><td>主程序 vs 子程序</td><td>主程序管視窗與 IPC；子程序跑策略</td><td>fork 隔離：策略當掉不拖垮畫面，金鑰只存在子程序環境變數</td></tr>
+          <tr><td>客戶端 vs 伺服器端驗證</td><td>Key 放安裝檔裡 vs 只放雲端</td><td>v4.2.0 起改由 Lambda 驗證；客戶端只送序號與機碼，安裝檔解開也拿不到 Whop Key</td></tr>
+          <tr><td>DENIED vs 503</td><td>序號確定不行 vs 暫時查不到</td><td>只有 DENIED 才清快取擋人；503（Whop 掛掉、逾時、我方 Key 失效）一律走 24 小時離線快取</td></tr>
+          <tr><td>本機打包 vs CI 打包</td><td>你的電腦 vs GitHub Actions</td><td>本機輸出到專案外（避免 VS Code 鎖 app.asar）、不發佈；推 <code>v*</code> tag 才由 CI 打包三平台並更新 versions.json</td></tr>
+          <tr><td>WebSocket vs REST</td><td>WS 是交易所主動推送；REST 是我方主動詢問</td><td>WS 負責「何時觸發」，REST 負責下單與查詢；Watchdog 每 5 分鐘全同步補漏</td></tr>
+          <tr><td><code>null</code> vs <code>0</code>／<code>[]</code></td><td>查詢失敗 vs 真的沒有</td><td>失敗一律回 <code>null</code>，呼叫端跳過本輪；改合約要搜遍所有呼叫端</td></tr>
+          <tr><td>offers vs credits</td><td>掛單中（還沒人借）vs 已借出</td><td>Bitfinex 網頁「掛單」看 offers；借出統計看 credits</td></tr>
+          <tr><td>二分法 vs 階梯</td><td>拆兩筆 vs 依序拉高利率分多筆</td><td>資金 ≥ 1000 才用階梯，否則二分法</td></tr>
+          <tr><td><code>invoke</code> vs <code>on</code></td><td>畫面主動查詢 vs 主程序主動推送</td><td>兩者都要列在 preload 白名單，否則前端呼叫不到</td></tr>
+          <tr><td>stdout vs stderr</td><td><code>console.log</code> vs <code>console.warn/error</code></td><td>stderr 只進終端機頁籤與 DB，不印到 PowerShell</td></tr>
+          <tr><td><code>start:win</code> vs dev</td><td>載入 <code>client/dist</code> vs Vite 即時編譯</td><td>改前端後要先 <code>npm run build</code>，否則看到舊版</td></tr>
+          <tr><td>PM2 vs 自管 fork</td><td>外部行程管理器 vs Electron 自己管</td><td>早期用 PM2，現在由 main.js 自管並內建崩潰重啟；註解、<code>bfx-bot-usdt</code> 等名稱與 <code>asarUnpack</code> 的 <code>@pm2</code> 是遺留</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card wide">
+      <h2>每一區的重點</h2>
+      <div class="grid3">
+        <div>
+          <h3>Renderer（React）<span class="tag">只碰白名單</span></h3>
+          <p>React + Vite + Tailwind，i18n 中英文、深淺色。不能直接用 Node，所有資料都靠 <code>window.electron.invoke／on</code>。授權未通過時只渲染 LicenseGate。</p>
+          <h3>preload.js<span class="tag">安全邊界</span></h3>
+          <p><code>contextIsolation: true</code>、<code>nodeIntegration: false</code>，只用 contextBridge 暴露白名單內的通道。</p>
+<pre>const allowed = ['api:stats', 'api:system:alerts', /* … */];
+invoke: (ch, ...a) =&gt; allowed.includes(ch)
+  ? ipcRenderer.invoke(ch, ...a) : Promise.reject()</pre>
+          <h3>Main 主程序<span class="tag">生命週期・IPC</span></h3>
+          <p>單例鎖、系統列、防休眠、開機自啟、關閉前安全收尾；IPC 參數驗證（symbol 白名單、<code>api:open-external</code> 協定檢查、<code>api:vwap</code> 白名單）。</p>
+<pre>const key = decryptForBot(keys.apiKey);
+if (key === null) return; // 解密失敗不 fork
+fork('bot-runner.js', [], { env: { SECURE_API_KEY: key } });</pre>
+        </div>
+        <div>
+          <h3>Bot 子程序<span class="tag">策略核心</span></h3>
+          <p>單一子程序同時服務 fUSD／fUST／fBTC，每個幣種的停止狀態分開記錄（<code>userStoppedMap</code>）。策略逾時 4 分鐘、同步 3 分鐘、WS 重連 15 秒。</p>
+<pre>// bfx.service：500/429 觸發熔斷 30 秒，回傳 null
+if (credits === null) {
+  console.warn('API error, skipping this snapshot');
+  return null;   // 保留上一筆正常資料
+}</pre>
+          <h3>SQLite<span class="tag">7 張表</span></h3>
+          <p><code>configs</code>（設定、密文金鑰、EMA）、<code>offers</code>、<code>credit_lifecycle</code>、<code>stats</code>、<code>ledgers</code>、<code>logs</code>、<code>eula_agreements</code>。每 12 小時自動清理過期資料。<code>*.db</code> 絕不進版控。</p>
+          <h3>雲端服務</h3>
+          <p>Bitfinex（REST 下單、WS 推送；nonce 以時間戳遞增，時鐘倒退或兩支程式共用一把 Key 會出現 <code>nonce: small</code>）、Whop（會員資料，只由 Lambda 存取）、License Lambda（授權驗證，us-east-1）、Telegram（推播）、GitHub <code>versions.json</code>（更新檢查）。</p>
+        </div>
+        <div>
+          <h3>安全性總表</h3>
+          <ul>
+            <li><b>Whop API Key 只存在 AWS SSM（SecureString）</b>，Lambda 的 IAM 角色只能讀這一個參數；安裝檔、<code>.env</code>、GitHub Secret 都已移除</li>
+            <li>打包前掃描所有會被打包的檔案，發現 <code>apik_</code> 就中止；<code>runtime-config.json</code>、<code>.env.*</code> 一律排除</li>
+            <li>Bitfinex API Key 用 OS 金鑰庫（safeStorage）加密存放，只在子程序解密使用；啟動時拒絕有提幣／交易權限的 Key</li>
+            <li>日誌輸出前遮罩金鑰；Lambda 日誌只記結果代碼，不記序號與機碼</li>
+            <li>Lambda 擋掉非 POST、超過 2KB、格式不合法的請求，序號含 <code>../</code> 不會送到 Whop</li>
+            <li>換 Whop Key 不用重新部署：Lambda 收到 401/403 會自動重讀 SSM</li>
+            <li>AWS 每月 10 美元預算警報（不計入抵用金），超過 5 美元就寄信</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+</body>
+</html>

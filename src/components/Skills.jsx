@@ -10,7 +10,7 @@ const OT_SKILLS = [
   { name: "OPC-UA", note: "生產環境" },
   { name: "SINAMICS S120 / G120", note: "業界講師認證" },
   { name: "Mitsubishi iQ-R / FX5U", note: null },
-  { name: "SLMP / Modbus RTU", note: null },
+  { name: "PLCSIM / SLMP / Modbus RTU", note: null },
 ];
 
 const IT_SKILLS = [
@@ -19,9 +19,11 @@ const IT_SKILLS = [
   { name: "React / Vite", note: "商業專案" },
   { name: "Electron", note: "商業專案" },
   { name: "Node.js", note: null },
+  { name: "AWS（Lambda / DynamoDB / S3）", note: "SAA 認證" },
+  { name: "LLM / RAG / Claude API", note: "作品實作" },
+  { name: "MCP Server", note: "作品實作" },
+  { name: "TimescaleDB / pgvector", note: null },
   { name: "Docker", note: null },
-  { name: "TimescaleDB", note: null },
-  { name: "Machine Learning", note: null },
 ];
 
 const OT_TAGS = [
@@ -34,7 +36,7 @@ const OT_TAGS = [
   "ET200SP",
   "Fieldbus",
 ];
-const IT_TAGS = ["LLM", "RAG", "CI/CD", "SQLite", "WebSocket", "SSE"];
+const IT_TAGS = ["Agent", "Hybrid Search", "Reranker", "LLM 評估", "Qdrant", "CI/CD", "WebSocket", "SSE"];
 
 const WORKFLOW = [
   {

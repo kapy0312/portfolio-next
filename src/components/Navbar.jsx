@@ -52,7 +52,7 @@ export default function Navbar() {
         </ul>
 
         <a
-          href="mailto:your@email.com"
+          href="mailto:kapy0312@gmail.com"
           className="
             hidden md:inline-flex items-center px-4 py-2
             text-sm font-medium rounded border border-cyan/40 text-cyan
