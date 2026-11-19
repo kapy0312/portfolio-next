@@ -1,0 +1,448 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>rag-platform 架構全圖</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: 一欄式技術文件，圖在上（可橫捲），三張說明卡、程式碼、安全性依序往下 */
+:root{
+  --bg:#f5f7fa; --fg:#18212e; --fg2:#4b5768; --card:#ffffff; --zone:#e9eff5; --zone-line:#b6c4d2;
+  --scope:#8593a4; --line:#a3b0bf; --main:#0b7285; --alt:#6d45d9; --sup:#c2410c; --sup-bg:#fff5ee;
+  --gray:#8592a3; --code-bg:#eef2f6; --rule:#d8e0e8;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"JetBrains Mono","Noto Sans Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1219; --fg:#e2e7ee; --fg2:#9ba7b7; --card:#151c27; --zone:#111924; --zone-line:#2b394a;
+  --scope:#5d6d82; --line:#3a4859; --main:#3bc9db; --alt:#b197fc; --sup:#fb923c; --sup-bg:#26180e;
+  --gray:#6f7d8f; --code-bg:#111823; --rule:#253141; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1219; --fg:#e2e7ee; --fg2:#9ba7b7; --card:#151c27; --zone:#111924; --zone-line:#2b394a;
+  --scope:#5d6d82; --line:#3a4859; --main:#3bc9db; --alt:#b197fc; --sup:#fb923c; --sup-bg:#26180e;
+  --gray:#6f7d8f; --code-bg:#111823; --rule:#253141; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1{font-size:26px;margin:0;text-wrap:balance}
+h2{font-size:19px;margin:0 0 12px;text-wrap:balance}
+h3{font-size:15px;margin:0 0 6px}
+p{margin:0}
+.lead{color:var(--fg2);max-width:70ch}
+.q{font-family:var(--mono);font-size:13px;color:var(--main)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 26px;font-size:13px;color:var(--fg2);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend svg{width:44px;height:10px;overflow:visible}
+.diagram{overflow-x:auto;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:12px}
+.diagram svg{display:block;width:100%;min-width:1080px;height:auto}
+/* svg */
+.zone{fill:var(--zone);stroke:var(--zone-line);stroke-width:1.2}
+.scope{fill:none;stroke:var(--scope);stroke-width:1;stroke-dasharray:5 4}
+.sup-frame{fill:none;stroke:var(--sup);stroke-width:1.4;stroke-dasharray:7 4}
+.box{fill:var(--card);stroke:var(--line);stroke-width:1}
+.box.key{stroke:var(--main);stroke-width:1.6}
+.sup{fill:var(--sup-bg);stroke:var(--sup);stroke-width:1}
+.zt{font:700 14px var(--sans);fill:var(--fg)}
+.st{font:600 11.5px var(--mono);fill:var(--fg2)}
+.tn{font:700 13px var(--sans);fill:var(--fg)}
+.tr{font:400 11.5px var(--sans);fill:var(--fg2)}
+.sup-t{fill:var(--sup)}
+.l-main{fill:none;stroke:var(--main);stroke-width:2}
+.l-alt{fill:none;stroke:var(--alt);stroke-width:1.6;stroke-dasharray:6 4}
+.l-gen{fill:none;stroke:var(--gray);stroke-width:1}
+.mk-main{fill:var(--main)} .mk-alt{fill:var(--alt)} .mk-gen{fill:var(--gray)}
+.lb{font:600 11px var(--mono);paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
+.diagram .zone ~ .lb{stroke:var(--zone)}
+.lb-main{fill:var(--main)} .lb-alt{fill:var(--alt)} .lb-gen{fill:var(--fg2)}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:20px 22px;min-width:0}
+.card ol,.card ul{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.card li{color:var(--fg)}
+.card .tag{font-family:var(--mono);font-size:12px;color:var(--main);font-weight:600}
+.card .alt{color:var(--alt)}
+.sub{font-size:12px;letter-spacing:.06em;color:var(--fg2);text-transform:uppercase;font-family:var(--mono);margin:14px 0 6px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-weight:700;color:var(--fg2);font-size:12.5px}
+td code,li code,p code{font-family:var(--mono);font-size:12.5px;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+.codes{display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:18px}
+@media (max-width:560px){.codes{grid-template-columns:1fr}.cards{grid-template-columns:1fr}}
+.code{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:18px 20px;min-width:0;display:flex;flex-direction:column;gap:10px}
+pre{margin:0;background:var(--code-bg);border-radius:8px;padding:14px 16px;overflow-x:auto;font:12.5px/1.6 var(--mono);color:var(--fg)}
+.cm{color:var(--gray)}
+.note{font-size:13px;color:var(--fg2)}
+.sec{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.sec div{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;min-width:0}
+.sec b{display:block;margin-bottom:4px}
+.sec p{font-size:14px;color:var(--fg2)}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <h1>rag-platform 架構全圖</h1>
+    <p class="lead">這張圖回答一個問題：一個問題從發問，到拿到附出處的答案，在本機網頁、雲端網頁、claude.ai 連接器三種入口，各自經過哪些元件。</p>
+    <p class="q">PDF 知識庫 · 混合檢索 RAG · Claude agent · MCP 連接器 · AWS Serverless</p>
+  </header>
+
+  <div class="legend" aria-label="圖例">
+    <span><svg viewBox="0 0 44 10"><line x1="0" y1="5" x2="38" y2="5" style="stroke:var(--main);stroke-width:2"/><path d="M36,1 L44,5 L36,9 z" style="fill:var(--main)"/></svg>主流程（①–⑥ 本機 RAG，⑦–⑪ 公開連接器）</span>
+    <span><svg viewBox="0 0 44 10"><line x1="0" y1="5" x2="38" y2="5" style="stroke:var(--alt);stroke-width:1.6;stroke-dasharray:6 4"/><path d="M36,1 L44,5 L36,9 z" style="fill:var(--alt)"/></svg>替代 / 付費路線（agent、Gemini、裁判、私人連接器）</span>
+    <span><svg viewBox="0 0 44 10"><line x1="0" y1="5" x2="38" y2="5" style="stroke:var(--gray);stroke-width:1"/><path d="M36,1 L44,5 L36,9 z" style="fill:var(--gray)"/></svg>一般讀寫</span>
+    <span><svg viewBox="0 0 44 10"><rect x="1" y="1" width="42" height="8" rx="2" style="fill:none;stroke:var(--sup);stroke-dasharray:5 3"/></svg>橫切支援</span>
+  </div>
+
+  <div class="diagram"><svg viewBox="0 0 1200 1310" role="img" aria-label="rag-platform 全功能架構圖"><defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="mk-main" d="M0,0 L10,5 L0,10 z"/></marker><marker id="ams" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="mk-main" d="M10,0 L0,5 L10,10 z"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="mk-alt" d="M0,0 L10,5 L0,10 z"/></marker><marker id="aas" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="mk-alt" d="M10,0 L0,5 L10,10 z"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="mk-gen" d="M0,0 L10,5 L0,10 z"/></marker><marker id="ags" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="mk-gen" d="M10,0 L0,5 L10,10 z"/></marker></defs>
+<rect class="scope" x="20" y="150" width="200" height="830" rx="8"/>
+<text class="st" x="32" y="169">使用者入口</text>
+<rect class="scope" x="960" y="150" width="220" height="860" rx="8"/>
+<text class="st" x="972" y="169">外部服務</text>
+<rect class="zone" x="250" y="70" width="680" height="500" rx="10"/>
+<text class="zt" x="265" y="92">本機 · 桌機 GPU（Tailscale 私網）</text>
+<rect class="zone" x="250" y="605" width="680" height="470" rx="10"/>
+<text class="zt" x="265" y="627">AWS us-east-1（雲端）</text>
+<rect class="box key" x="30" y="205" width="180" height="60" rx="6"/>
+<text class="tn" x="120.0" y="231" text-anchor="middle">本機網頁 React</text>
+<text class="tr" x="120.0" y="247" text-anchor="middle">Vite :5173 · RAG/Agent 切換</text>
+<rect class="box" x="30" y="440" width="180" height="60" rx="6"/>
+<text class="tn" x="120.0" y="466" text-anchor="middle">Claude Desktop</text>
+<text class="tr" x="120.0" y="482" text-anchor="middle">本機 MCP（stdio）</text>
+<rect class="box" x="30" y="645" width="180" height="60" rx="6"/>
+<text class="tn" x="120.0" y="671" text-anchor="middle">雲端網頁</text>
+<text class="tr" x="120.0" y="687" text-anchor="middle">CloudFront 網址 · 只開 RAG</text>
+<rect class="box key" x="30" y="790" width="180" height="60" rx="6"/>
+<text class="tn" x="120.0" y="816" text-anchor="middle">claude.ai 公開連接器</text>
+<text class="tr" x="120.0" y="832" text-anchor="middle">免登入 · 只看分類 5</text>
+<rect class="box" x="30" y="900" width="180" height="60" rx="6"/>
+<text class="tn" x="120.0" y="926" text-anchor="middle">claude.ai / Claude Code</text>
+<text class="tr" x="120.0" y="942" text-anchor="middle">私人連接器 · Bearer</text>
+<rect class="scope" x="268" y="118" width="234" height="236" rx="8"/>
+<text class="st" x="280" y="137">FastAPI :8000</text>
+<rect class="box" x="285" y="148" width="200" height="50" rx="6"/>
+<text class="tn" x="385.0" y="169" text-anchor="middle">/api/agent/query</text>
+<text class="tr" x="385.0" y="185" text-anchor="middle">agent 迴圈 agent.py</text>
+<rect class="box key" x="285" y="210" width="200" height="50" rx="6"/>
+<text class="tn" x="385.0" y="231" text-anchor="middle">/api/query</text>
+<text class="tr" x="385.0" y="247" text-anchor="middle">固定撈 5 段 · SSE 串流</text>
+<rect class="box" x="285" y="272" width="200" height="50" rx="6"/>
+<text class="tn" x="385.0" y="293" text-anchor="middle">/api/search · /pages</text>
+<text class="tr" x="385.0" y="309" text-anchor="middle">給 MCP 用的檢索與整頁</text>
+<rect class="scope" x="522" y="118" width="398" height="236" rx="8"/>
+<text class="st" x="534" y="137">檢索 retrieval.py</text>
+<rect class="box key" x="540" y="150" width="118" height="50" rx="6"/>
+<text class="tn" x="599.0" y="171" text-anchor="middle">Dense</text>
+<text class="tr" x="599.0" y="187" text-anchor="middle">bge-m3 向量</text>
+<rect class="box key" x="540" y="250" width="118" height="50" rx="6"/>
+<text class="tn" x="599.0" y="271" text-anchor="middle">BM25</text>
+<text class="tr" x="599.0" y="287" text-anchor="middle">中文 bigram 斷詞</text>
+<rect class="box key" x="680" y="200" width="100" height="50" rx="6"/>
+<text class="tn" x="730.0" y="221" text-anchor="middle">RRF</text>
+<text class="tr" x="730.0" y="237" text-anchor="middle">兩份排名合併</text>
+<rect class="box key" x="800" y="200" width="104" height="50" rx="6"/>
+<text class="tn" x="852.0" y="221" text-anchor="middle">Reranker</text>
+<text class="tr" x="852.0" y="237" text-anchor="middle">bge-reranker-v2</text>
+<rect class="box" x="270" y="440" width="116" height="60" rx="6"/>
+<text class="tn" x="328.0" y="466" text-anchor="middle">MCP Server</text>
+<text class="tr" x="328.0" y="482" text-anchor="middle">stdio · 5 工具</text>
+<rect class="box" x="401" y="440" width="116" height="60" rx="6"/>
+<text class="tn" x="459.0" y="466" text-anchor="middle">run_eval.py</text>
+<text class="tr" x="459.0" y="482" text-anchor="middle">12 題自動評分</text>
+<rect class="box" x="532" y="440" width="116" height="60" rx="6"/>
+<text class="tn" x="590.0" y="466" text-anchor="middle">SQLite·uploads</text>
+<text class="tr" x="590.0" y="482" text-anchor="middle">分類 / chunks / PDF</text>
+<rect class="box" x="663" y="440" width="116" height="60" rx="6"/>
+<text class="tn" x="721.0" y="466" text-anchor="middle">Qdrant Docker</text>
+<text class="tr" x="721.0" y="482" text-anchor="middle">向量資料庫</text>
+<rect class="box key" x="794" y="440" width="116" height="60" rx="6"/>
+<text class="tn" x="852.0" y="466" text-anchor="middle">Ollama GPU</text>
+<text class="tr" x="852.0" y="482" text-anchor="middle">qwen3:14b 寫答案</text>
+<rect class="box key" x="520" y="645" width="180" height="60" rx="6"/>
+<text class="tn" x="610.0" y="671" text-anchor="middle">CloudFront</text>
+<text class="tr" x="610.0" y="687" text-anchor="middle">/api/* 與靜態檔分流</text>
+<rect class="box" x="740" y="645" width="170" height="60" rx="6"/>
+<text class="tn" x="825.0" y="671" text-anchor="middle">S3 前端</text>
+<text class="tr" x="825.0" y="687" text-anchor="middle">React build · OAC</text>
+<rect class="scope" x="260" y="755" width="222" height="222" rx="8"/>
+<text class="st" x="272" y="774">MCP Lambda × 2</text>
+<rect class="box key" x="270" y="790" width="200" height="60" rx="6"/>
+<text class="tn" x="370.0" y="816" text-anchor="middle">rag-platform-mcp-public</text>
+<text class="tr" x="370.0" y="832" text-anchor="middle">4 工具 · 限分類 5</text>
+<rect class="box" x="270" y="900" width="200" height="60" rx="6"/>
+<text class="tn" x="370.0" y="926" text-anchor="middle">rag-platform-mcp</text>
+<text class="tr" x="370.0" y="942" text-anchor="middle">Bearer 驗證 · 5 工具</text>
+<rect class="box key" x="520" y="790" width="180" height="60" rx="6"/>
+<text class="tn" x="610.0" y="816" text-anchor="middle">rag-platform-api</text>
+<text class="tr" x="610.0" y="832" text-anchor="middle">FastAPI + LWA · 無 rerank</text>
+<rect class="box" x="740" y="900" width="170" height="60" rx="6"/>
+<text class="tn" x="825.0" y="926" text-anchor="middle">rag-platform-processor</text>
+<text class="tr" x="825.0" y="942" text-anchor="middle">切段 + 向量化</text>
+<rect class="scope" x="260" y="985" width="660" height="81" rx="8"/>
+<text class="st" x="272" y="1004">資料與密碼</text>
+<rect class="box" x="270" y="1008" width="200" height="48" rx="6"/>
+<text class="tn" x="370.0" y="1028" text-anchor="middle">Secrets Manager</text>
+<text class="tr" x="370.0" y="1044" text-anchor="middle">MCP token</text>
+<rect class="box" x="520" y="1008" width="120" height="48" rx="6"/>
+<text class="tn" x="580.0" y="1028" text-anchor="middle">DynamoDB</text>
+<text class="tr" x="580.0" y="1044" text-anchor="middle">分類 / 文件</text>
+<rect class="box" x="655" y="1008" width="255" height="48" rx="6"/>
+<text class="tn" x="782.5" y="1028" text-anchor="middle">S3 uploads/</text>
+<text class="tr" x="782.5" y="1044" text-anchor="middle">PDF 原檔 · 整頁原文</text>
+<rect class="box" x="975" y="200" width="190" height="80" rx="6"/>
+<text class="tn" x="1070" y="228" text-anchor="middle">Anthropic API</text>
+<text class="tr" x="1070" y="246" text-anchor="middle">Claude Haiku 4.5</text>
+<text class="tr" x="1070" y="263" text-anchor="middle">agent · 裁判 Batch</text>
+<rect class="box key" x="975" y="775" width="190" height="60" rx="6"/>
+<text class="tn" x="1070.0" y="801" text-anchor="middle">DeepInfra</text>
+<text class="tr" x="1070.0" y="817" text-anchor="middle">bge-m3 雲端向量化</text>
+<rect class="box key" x="975" y="855" width="190" height="60" rx="6"/>
+<text class="tn" x="1070.0" y="881" text-anchor="middle">Qdrant Cloud</text>
+<text class="tr" x="1070.0" y="897" text-anchor="middle">雲端向量資料庫</text>
+<rect class="box" x="975" y="935" width="190" height="60" rx="6"/>
+<text class="tn" x="1070.0" y="961" text-anchor="middle">Gemini 2.5 Flash-Lite</text>
+<text class="tr" x="1070.0" y="977" text-anchor="middle">雲端寫答案 · LiteLLM</text>
+<path class="l-main" d="M210,224 H285" marker-end="url(#am)"/>
+<text class="lb lb-main" x="247" y="216" text-anchor="middle">① 發問</text>
+<path class="l-main" d="M512,235 V175 H540" marker-end="url(#am)"/>
+<path class="l-main" d="M485,235 H512 V275 H540" marker-end="url(#am)"/>
+<text class="lb lb-main" x="599" y="230" text-anchor="middle">② 混合檢索</text>
+<path class="l-main" d="M658,175 L680,214" marker-end="url(#am)"/>
+<path class="l-main" d="M658,275 L680,236" marker-end="url(#am)"/>
+<text class="lb lb-main" x="730" y="270" text-anchor="middle">③ 合併排名</text>
+<path class="l-main" d="M780,225 H800" marker-end="url(#am)"/>
+<text class="lb lb-main" x="790" y="192" text-anchor="middle">④ 30→5</text>
+<path class="l-main" d="M852,250 V440" marker-end="url(#am)"/>
+<text class="lb lb-main" x="844" y="322" text-anchor="end">⑤ 組提示生成</text>
+<path class="l-main" d="M285,248 H210" marker-end="url(#am)"/>
+<text class="lb lb-main" x="247" y="263" text-anchor="middle">⑥ SSE</text>
+<path class="l-alt" d="M385,148 V106 H1070 V200" marker-end="url(#aa)" marker-start="url(#aas)"/>
+<text class="lb lb-alt" x="720" y="99" text-anchor="middle">Claude 自己決定查幾次（tool use）</text>
+<path class="l-alt" d="M210,470 H270" marker-end="url(#aa)"/>
+<text class="lb lb-alt" x="240" y="462" text-anchor="middle">stdio</text>
+<path class="l-alt" d="M459,500 V546 H945 V262 H975" marker-end="url(#aa)"/>
+<text class="lb lb-alt" x="700" y="539" text-anchor="middle">裁判 Batch 半價</text>
+<path class="l-gen" d="M328,440 V322" marker-end="url(#ag)"/>
+<text class="lb lb-gen" x="334" y="395" text-anchor="start">httpx</text>
+<path class="l-gen" d="M459,440 V354" marker-end="url(#ag)"/>
+<text class="lb lb-gen" x="465" y="395" text-anchor="start">打 API</text>
+<path class="l-gen" d="M590,354 V440" marker-end="url(#ag)"/>
+<text class="lb lb-gen" x="597" y="400" text-anchor="start">讀 chunks</text>
+<path class="l-gen" d="M721,354 V440" marker-end="url(#ag)"/>
+<text class="lb lb-gen" x="728" y="400" text-anchor="start">向量查詢</text>
+<path class="l-alt" d="M210,675 H520" marker-end="url(#aa)"/>
+<text class="lb lb-alt" x="365" y="668" text-anchor="middle">HTTPS 網頁</text>
+<path class="l-gen" d="M700,675 H740" marker-end="url(#ag)"/>
+<text class="lb lb-gen" x="720" y="668" text-anchor="middle">其餘</text>
+<path class="l-main" d="M210,808 H270" marker-end="url(#am)"/>
+<text class="lb lb-main" x="240" y="800" text-anchor="middle">⑦ 呼叫</text>
+<path class="l-main" d="M420,790 V740 H560 V705" marker-end="url(#am)"/>
+<text class="lb lb-main" x="490" y="733" text-anchor="middle">⑧ HTTPS</text>
+<path class="l-main" d="M610,705 V790" marker-end="url(#am)"/>
+<text class="lb lb-main" x="618" y="752" text-anchor="start">⑨ /api/*</text>
+<path class="l-main" d="M700,805 H975" marker-end="url(#am)"/>
+<text class="lb lb-main" x="838" y="798" text-anchor="middle">⑩ 向量化</text>
+<path class="l-main" d="M700,828 H948 V885 H975" marker-end="url(#am)"/>
+<text class="lb lb-main" x="838" y="822" text-anchor="middle">⑩ 搜尋</text>
+<path class="l-main" d="M270,834 H210" marker-end="url(#am)"/>
+<text class="lb lb-main" x="240" y="850" text-anchor="middle">⑪ 原文</text>
+<path class="l-alt" d="M210,930 H270" marker-end="url(#aa)"/>
+<text class="lb lb-alt" x="240" y="922" text-anchor="middle">Bearer</text>
+<path class="l-alt" d="M470,945 H495 V757 H580 V705" marker-end="url(#aa)"/>
+<text class="lb lb-alt" x="502" y="885" text-anchor="start">同上</text>
+<path class="l-alt" d="M700,845 H932 V965 H975" marker-end="url(#aa)"/>
+<text class="lb lb-alt" x="818" y="862" text-anchor="middle">生成答案</text>
+<path class="l-alt" d="M690,850 V930 H740" marker-end="url(#aa)"/>
+<text class="lb lb-alt" x="715" y="922" text-anchor="middle">非同步</text>
+<path class="l-alt" d="M370,960 V1008" marker-end="url(#aa)"/>
+<text class="lb lb-alt" x="377" y="973" text-anchor="start">讀 token</text>
+<path class="l-gen" d="M580,850 V1008" marker-end="url(#ag)"/>
+<text class="lb lb-gen" x="586" y="930" text-anchor="start">metadata</text>
+<path class="l-gen" d="M665,850 V1008" marker-end="url(#ag)"/>
+<text class="lb lb-gen" x="659" y="975" text-anchor="end">讀頁面</text>
+<path class="l-gen" d="M825,960 V1008" marker-end="url(#ag)"/>
+<text class="lb lb-gen" x="832" y="980" text-anchor="start">存 PDF</text>
+<rect class="sup-frame" x="20" y="1095" width="1160" height="200" rx="8"/>
+<text class="st" x="32" y="1114">橫切支援（每一層都適用）</text>
+<rect class="sup" x="36" y="1128" width="270" height="155" rx="6"/>
+<text class="tn sup-t" x="50" y="1150">安全</text>
+<text class="tr" x="50" y="1172">Bearer + hmac.compare_digest</text>
+<text class="tr" x="50" y="1191">token 放 Secrets Manager</text>
+<text class="tr" x="50" y="1210">公開版限分類、拿掉付費工具</text>
+<text class="tr" x="50" y="1229">IAM 最小權限（只讀 uploads/*）</text>
+<text class="tr" x="50" y="1248">工具結果只當資料不當指令</text>
+<text class="tr" x="50" y="1267">aws login 暫時憑證，桌機不放金鑰</text>
+<rect class="sup" x="322" y="1128" width="270" height="155" rx="6"/>
+<text class="tn sup-t" x="336" y="1150">評估</text>
+<text class="tr" x="336" y="1172">run_eval.py 12 題標準答案</text>
+<text class="tr" x="336" y="1191">裁判 qwen3:8b ↔ Claude Haiku</text>
+<text class="tr" x="336" y="1210">Cohen&#x27;s kappa 看裁判合不合</text>
+<text class="tr" x="336" y="1229">引文比對 quote check</text>
+<text class="tr" x="336" y="1248">--api rag | agent | agent-fixed</text>
+<text class="tr" x="336" y="1267">沒附出處的回答算不忠實</text>
+<rect class="sup" x="608" y="1128" width="270" height="155" rx="6"/>
+<text class="tn sup-t" x="622" y="1150">成本護欄</text>
+<text class="tr" x="622" y="1172">Anthropic $5 上限、關自動儲值</text>
+<text class="tr" x="622" y="1191">Gemini 預付，用完就停</text>
+<text class="tr" x="622" y="1210">AWS 預算警示</text>
+<text class="tr" x="622" y="1229">Lambda 帳號並行上限 10</text>
+<text class="tr" x="622" y="1248">MAX_TOOL_CALLS = 6</text>
+<text class="tr" x="622" y="1267">prompt caching 省重複提示</text>
+<rect class="sup" x="894" y="1128" width="270" height="155" rx="6"/>
+<text class="tn sup-t" x="908" y="1150">部署</text>
+<text class="tr" x="908" y="1172">在 backend/ 裡 docker build</text>
+<text class="tr" x="908" y="1191">推 ECR → update-function-code</text>
+<text class="tr" x="908" y="1210">比對 image digest 確認換版</text>
+<text class="tr" x="908" y="1229">前端 S3 sync + CloudFront 清快取</text>
+<text class="tr" x="908" y="1248">.dockerignore 擋 env / secret 檔</text>
+<text class="tr" x="908" y="1267">VITE_ENABLE_AGENT=false 上雲</text>
+</svg></div>
+
+  <div class="cards">
+    <section class="card">
+      <h2>主流程一步一步</h2>
+      <div class="sub">本機網頁 · RAG 模式</div>
+      <ol>
+        <li><span class="tag">①</span> 在網頁輸入問題，POST 到 <code>/api/query</code>。</li>
+        <li><span class="tag">②</span> 同一個問題兩邊一起找：bge-m3 用「意思」找，BM25 用「字面」找，各撈 30 段。</li>
+        <li><span class="tag">③</span> RRF 把兩份排名合成一份。兩邊都排前面的段落會被推到最前。</li>
+        <li><span class="tag">④</span> reranker 逐段重新打分，從 30 段挑出最相關的 5 段。</li>
+        <li><span class="tag">⑤</span> 5 段原文和問題組成提示，交給本機 qwen3:14b 寫答案。</li>
+        <li><span class="tag">⑥</span> 答案用 SSE 一個字一個字傳回網頁，出處卡片附檔名和頁碼。</li>
+      </ol>
+      <div class="sub">claude.ai 公開連接器</div>
+      <ol start="7">
+        <li><span class="tag">⑦</span> claude.ai 裡的 Claude 自己決定要呼叫哪個工具，送 <code>tools/call</code> 到公開 Lambda。</li>
+        <li><span class="tag">⑧</span> Lambda 先檢查分類有沒有開放，再用 HTTPS 呼叫 CloudFront。</li>
+        <li><span class="tag">⑨</span> CloudFront 看到 <code>/api/*</code>，就轉給 api Lambda。</li>
+        <li><span class="tag">⑩</span> 問題交給 DeepInfra 變成向量，再到 Qdrant Cloud 搜尋。雲端沒有 reranker，所以直接照 RRF 排名。</li>
+        <li><span class="tag">⑪</span> 找到的原文傳回 Claude，由 Claude 自己寫答案、標出處。</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>容易搞混的地方</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>入口</th><th>誰去找資料</th><th>誰寫答案</th><th>誰付錢</th></tr></thead>
+        <tbody>
+          <tr><td>本機 RAG</td><td>固定找 1 次、5 段</td><td>qwen3:14b</td><td>免費（電費）</td></tr>
+          <tr><td>本機 Agent</td><td>Claude 自己決定，最多 6 次</td><td>Claude Haiku</td><td>我的 Anthropic 額度</td></tr>
+          <tr><td>Claude Desktop</td><td>Claude 透過 stdio 呼叫工具</td><td>Claude</td><td>使用者的訂閱</td></tr>
+          <tr><td>雲端網頁</td><td>固定 1 次（無 rerank）</td><td>Gemini Flash-Lite</td><td>Gemini 預付</td></tr>
+          <tr><td>公開連接器</td><td>claude.ai 的 Claude</td><td>claude.ai 的 Claude</td><td>使用者訂閱；我只付向量化</td></tr>
+          <tr><td>私人連接器</td><td>同上，多 <code>ask_knowledge_base</code></td><td>Claude 或 Gemini</td><td>同上，加 Gemini</td></tr>
+        </tbody>
+      </table></div>
+      <ul style="margin-top:14px">
+        <li><b>自己寫的 agent 迴圈和 MCP 差在哪：</b>本機 Agent 的迴圈寫在我的 <code>agent.py</code>，要付 API 費。走 MCP 時，迴圈在 Claude 那邊，我只提供工具。</li>
+        <li><b>固定 1 次和 agent 差在哪：</b>固定版快又便宜，但一次沒找到就答不好。agent 可以換關鍵字重找、讀整頁，所以 q009 的表格題只有它答完整。</li>
+        <li><b>公開版和私人版差在哪：</b>同一份程式。公開版免登入，所以只開分類 5，也拿掉會花錢的工具；私人版要帶 Bearer token。</li>
+        <li><b>stdio 和 HTTP 差在哪：</b>stdio 是 Claude Desktop 在本機直接啟動程式；HTTP 是放上網路，讓 claude.ai 連得到。</li>
+        <li><b>為什麼用 Lambda：</b>沒人用就不收錢，有人呼叫才啟動，適合流量很小的作品集。缺點是冷啟動會慢 1–3 秒。</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>各層重點</h2>
+      <ul>
+        <li><b>入口層：</b>React 用 <code>VITE_ENABLE_AGENT</code> 控制要不要顯示 Agent 按鈕，上雲版關掉，避免陌生人花我的 Claude 額度。</li>
+        <li><b>API 層：</b>FastAPI 用 SSE 串流，agent 的每一步（搜尋了什麼、讀了哪頁）都即時回報，網頁會顯示「查詢過程」。</li>
+        <li><b>檢索層：</b>800 字一段、前後重疊 150 字。中文 BM25 用兩字一組（bigram）切詞。雲端的 reranker 用 lazy import 跳過，Lambda 不用裝 PyTorch。</li>
+        <li><b>Agent 層：</b>兩個工具：<code>search_documents</code> 和 <code>get_page</code>。<code>get_page</code> 只能讀搜尋看過的文件；到了上限會強制回答；用 <code>use_tools=false</code> 當對照組。</li>
+        <li><b>MCP 層：</b><code>stateless_http=True</code> 讓每個請求都能獨立處理，適合 Lambda。要綁 <code>0.0.0.0</code>，否則 DNS rebinding 保護會回 421。</li>
+        <li><b>AWS 層：</b>CloudFront 用路徑分流：<code>/api/*</code> 給 Lambda，其他給 S3。Function URL 要同時開 InvokeFunctionUrl 和 InvokeFunction 兩個權限，不然會 403。</li>
+        <li><b>評估層：</b>用兩個裁判互相檢查。kappa 看兩個裁判的判斷有多一致，quote check 確認答案裡的引文真的出自原文。</li>
+      </ul>
+    </section>
+  </div>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <h2>核心程式碼</h2>
+    <p class="note">以下是精簡示意，保留關鍵邏輯，省略錯誤處理和型別，不是逐字原始碼。</p>
+    <div class="codes">
+      <div class="code">
+        <h3>混合檢索（services/retrieval.py）</h3>
+<pre><span class="cm"># 雲端沒有 GPU，不載入 reranker</span>
+RERANK_AVAILABLE = RAG_ENV != "cloud"
+
+def retrieve(question, category_id, top_k=5, use_rerank=True):
+    dense  = qdrant_search(embed(question), category_id, limit=30)
+    sparse = bm25_search(question, category_id, limit=30)
+    fused  = rrf_merge(dense, sparse)[:30]
+
+    if use_rerank and RERANK_AVAILABLE:
+        from services.reranker import rerank   <span class="cm"># 用到才 import</span>
+        return rerank(question, fused)[:top_k]
+    return fused[:top_k]                        <span class="cm"># 雲端：照 RRF 排名</span></pre>
+      </div>
+      <div class="code">
+        <h3>Agent 迴圈（services/agent.py）</h3>
+<pre>calls = 0
+while True:
+    forced = calls &gt;= MAX_TOOL_CALLS
+    resp = client.messages.create(
+        model=MODEL, system=AGENT_SYSTEM,  <span class="cm"># 提示有 cache</span>
+        tools=TOOLS, messages=messages,
+        tool_choice={"type": "none"} if forced else {"type": "auto"})
+
+    if resp.stop_reason != "tool_use":
+        break                               <span class="cm"># Claude 覺得夠了</span>
+
+    results = []
+    for block in tool_uses(resp):
+        out = run_tool(block, collector)    <span class="cm"># get_page 只能讀看過的文件</span>
+        calls += 1
+        yield step_event(block, out)
+        results.append(tool_result(block, out))
+    messages += [assistant(resp), user(results)]
+    if calls &gt;= MAX_TOOL_CALLS:
+        messages.append(FORCE_ANSWER_MSG)   <span class="cm"># 叫它用手上資料作答</span></pre>
+      </div>
+      <div class="code">
+        <h3>Bearer 驗證（mcp_server/server.py）</h3>
+<pre>class BearerAuthMiddleware:
+    def __init__(self, app, token):
+        self.app = app
+        self.expected = f"Bearer {token}".encode()
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http" and scope["path"] != "/health":
+            got = dict(scope["headers"]).get(b"authorization", b"")
+            <span class="cm"># 固定時間比對，不會因為前幾個字對了就比較慢</span>
+            if not hmac.compare_digest(got, self.expected):
+                return await send_401(send)  <span class="cm"># WWW-Authenticate: Bearer</span>
+        await self.app(scope, receive, send)</pre>
+      </div>
+      <div class="code">
+        <h3>公開模式（mcp_server/server.py）</h3>
+<pre>if AUTH_MODE == "none":
+    if not ALLOWED_CATEGORIES:
+        sys.exit("公開模式必須設定 MCP_ALLOWED_CATEGORIES")
+    mcp.remove_tool("ask_knowledge_base")   <span class="cm"># 會花 Gemini 錢的拿掉</span>
+else:
+    token = load_token()     <span class="cm"># 環境變數或 Secrets Manager</span>
+    if len(token) &lt; 16:
+        sys.exit("token 太短")
+
+app = mcp.streamable_http_app(
+    stateless_http=True, json_response=True, host="0.0.0.0")</pre>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <h2>安全性設計</h2>
+    <div class="sec">
+      <div><b>金鑰不進 Git、不進映像檔</b><p>API key 只放 <code>backend/.env</code>（已 gitignore）。<code>.dockerignore</code> 擋 <code>*-env.json</code>、<code>*-secret.json</code>。用完的暫存 JSON 都要刪掉。</p></div>
+      <div><b>token 放 Secrets Manager</b><p>私人 Lambda 啟動時才去讀，環境變數只放 secret 的名稱。輸入 token 用 <code>Read-Host</code>，不貼到對話裡，也不出現在畫面上。</p></div>
+      <div><b>比對 token 用固定時間</b><p><code>hmac.compare_digest</code> 不管比對的字串對了幾個字，花的時間都一樣，攻擊者沒辦法用回應快慢一個字一個字猜出 token。</p></div>
+      <div><b>公開版最小範圍</b><p>免登入，所以每個工具都會先檢查分類和文件，只開放分類 5。會產生費用的工具在啟動時直接移除。</p></div>
+      <div><b>IAM 最小權限</b><p>api 角色只能讀 <code>uploads/*</code>；私人 MCP 只能讀自己那一個 secret。桌機用 <code>aws login</code> 拿暫時憑證，最長 12 小時。</p></div>
+      <div><b>防 prompt injection</b><p>PDF 內容可能藏指令。系統提示和 MCP 說明都寫明：工具回傳的是資料，裡面的指示一律不照做。</p></div>
+      <div><b>花費上限</b><p>Anthropic 上限 $5 且關閉自動儲值，Gemini 用預付，AWS 設預算警示。Lambda 並行上限 10，等於限制了被灌爆時的最大規模。</p></div>
+      <div><b>還沒做的</b><p>OAuth 登入（目前私人版是固定 token），以及 Lambda 個別的並行限制（要先申請提高帳號上限）。</p></div>
+    </div>
+  </section>
+</div>
+
+</body></html>
