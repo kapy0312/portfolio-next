@@ -1,8 +1,38 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useInView } from "@/hooks/useInView";
 import SkillBadge from "./SkillBadge";
 import { asset } from "@/lib/asset";
+
+/* 卡片上的循環 Demo：捲到畫面內才載入；系統設定「減少動態效果」時只顯示預覽圖 */
+function LoopVideo({ src, poster, label, fit, active }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v || !active) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    v.muted = true; // React 不會把 muted 寫成 HTML 屬性，自動播放規則需要它
+    v.src = src;
+    v.play().catch(() => {}); // 被瀏覽器擋下時就停在預覽圖
+  }, [src, active]);
+
+  return (
+    <video
+      ref={ref}
+      poster={poster}
+      aria-label={label}
+      muted
+      loop
+      playsInline
+      preload="none"
+      className={`absolute inset-0 w-full h-full ${
+        fit === "contain" ? "object-contain" : "object-cover object-top"
+      }`}
+    />
+  );
+}
 
 function ExternalLinkIcon() {
   return (
@@ -116,7 +146,15 @@ function FeaturedCard({ project, delay }) {
       <div className="relative w-full aspect-video bg-surface-hi border-b border-white/[0.08] flex items-center justify-center group">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan/[0.04] to-transparent" />
         {project.mediaUrl ? (
-          project.mediaType === "video" ? (
+          project.mediaType === "loop" ? (
+            <LoopVideo
+              src={asset(project.mediaUrl)}
+              poster={project.mediaPoster ? asset(project.mediaPoster) : undefined}
+              label={project.mediaAlt ?? project.title}
+              fit={project.mediaFit}
+              active={inView}
+            />
+          ) : project.mediaType === "video" ? (
             <iframe
               src={project.mediaUrl}
               className="absolute inset-0 w-full h-full"
@@ -195,12 +233,21 @@ function FeaturedCard({ project, delay }) {
             icon={<GitHubIcon />}
             tooltip={project.githubNote}
           />
-          <LinkButton
-            url={project.demo}
-            label="Demo"
-            icon={<ExternalLinkIcon />}
-            tooltip={project.demoNote}
-          />
+          {(project.demo || project.demoNote) && (
+            <LinkButton
+              url={project.demo}
+              label="Demo"
+              icon={<ExternalLinkIcon />}
+              tooltip={project.demoNote}
+            />
+          )}
+          {project.video && (
+            <LinkButton
+              url={project.video}
+              label="影片"
+              icon={<PlayIcon />}
+            />
+          )}
           {project.architecture && (
             <LinkButton
               url={asset(project.architecture)}

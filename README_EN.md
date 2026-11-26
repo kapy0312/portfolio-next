@@ -12,7 +12,7 @@ Personal portfolio of **Kevin Lai**, a CIM / Industrial AI engineer working acro
 
 | Section | Content |
 |---|---|
-| Selected work | [IIoT SCADA Platform](https://github.com/kapy0312/iot-scada-platform), [RAG Platform](https://github.com/kapy0312/rag-platform) (with live demo), [VLT CNC Polishing](https://github.com/kapy0312/vlt-cnc-showcase), [BFX Lending Bot](https://github.com/kapy0312/bfx-lending-bot-showcase) |
+| Selected work | [IIoT SCADA Platform](https://github.com/kapy0312/iot-scada-platform) ([demo video](https://www.youtube.com/watch?v=DcHqKwXjdPI)), [RAG Platform](https://github.com/kapy0312/rag-platform) (live demo and [demo video](https://www.youtube.com/watch?v=nUIZQTsouj4)), [VLT CNC Polishing](https://github.com/kapy0312/vlt-cnc-showcase), [BFX Lending Bot](https://github.com/kapy0312/bfx-lending-bot-showcase) |
 | Case studies (`/case-studies`) | Five stories: retracting a wrong evaluation conclusion, honest hit/miss rates for predictive warnings, RAG for industrial fault diagnosis, a negative fine-tuning result, and fixing the mechanism behind an API key leak |
 | More work | Local AI service suite, [Subtitle generator](https://github.com/kapy0312/subtitle-app), [YT-Media-Extractor](https://github.com/kapy0312/YT-Media-Extractor), Pikmin classroom app |
 | Skills, experience, certifications | OT / IT skills, work history, AWS SAA, Siemens industry instructor |
@@ -39,6 +39,7 @@ portfolio-next/
 ├── public/
 │   ├── favicon.svg
 │   ├── images/               # project screenshots (WebP)
+│   ├── videos/               # looping card demos (MP4 converted from the project GIFs) and posters
 │   └── architecture/         # architecture diagrams (standalone HTML, sanitized)
 ├── .github/workflows/
 │   └── deploy.yml            # build → .nojekyll → push to gh-pages
@@ -70,7 +71,7 @@ portfolio-next/
 | Experience and certifications | `src/components/Experience.jsx` |
 | Contact | `src/components/Contact.jsx`, `src/components/Navbar.jsx` |
 
-Put screenshots in `public/images/` (`mediaUrl: "/images/name.webp"`) and diagrams in `public/architecture/` (`architecture: "/architecture/name.html"`, which adds an architecture button to the card); the base path is added automatically. The VLT diagram is a sanitized public version of a company project: PLC/NCK addresses, code names and mechanical specs are removed.
+Put screenshots in `public/images/` (`mediaUrl: "/images/name.webp"`), looping demos in `public/videos/` (`mediaType: "loop"`, `mediaUrl`, `mediaPoster`; loaded only when the card scrolls into view), YouTube links in `video` (adds a video button), and diagrams in `public/architecture/` (`architecture: "/architecture/name.html"`, which adds an architecture button to the card); the base path is added automatically. The VLT diagram is a sanitized public version of a company project: PLC/NCK addresses, code names and mechanical specs are removed.
 
 ## Getting started
 
@@ -98,5 +99,4 @@ Pushing to `main` runs `.github/workflows/deploy.yml`: `npm ci` → `next build`
 ## TODO
 
 - [ ] Add the 104 resume link back to `Contact.jsx` once the resume is public
-- [ ] Add demo video links for IIoT SCADA and RAG Platform when recorded
 - [ ] Replace the placeholder `public/favicon.svg`

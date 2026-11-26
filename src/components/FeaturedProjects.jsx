@@ -32,8 +32,7 @@ const FEATURED = [
     mediaPoster: "/videos/scada-poster.webp",
     architecture: "/architecture/scada.html",
     mediaType: "loop",
-    mediaAlt:
-      "Demo：溫度劣化 → 趨勢預警 → 警戒告警與 AI 診斷 → claude.ai 透過雲端 MCP 查事件",
+    mediaAlt: "Demo：溫度劣化 → 趨勢預警 → 警戒告警與 AI 診斷 → claude.ai 透過雲端 MCP 查事件",
   },
   {
     title: "RAG Platform",

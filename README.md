@@ -12,7 +12,7 @@ Kevin Lai 的個人作品集網站。CIM / 工業 AI 工程師，橫跨 OT（Sie
 
 | 區塊 | 內容 |
 |---|---|
-| 精選作品 | [IIoT SCADA 平台](https://github.com/kapy0312/iot-scada-platform)、[RAG Platform](https://github.com/kapy0312/rag-platform)（含 Live Demo）、[VLT CNC 拋光系統](https://github.com/kapy0312/vlt-cnc-showcase)、[BFX Lending Bot](https://github.com/kapy0312/bfx-lending-bot-showcase) |
+| 精選作品 | [IIoT SCADA 平台](https://github.com/kapy0312/iot-scada-platform)（含 [Demo 影片](https://www.youtube.com/watch?v=DcHqKwXjdPI)）、[RAG Platform](https://github.com/kapy0312/rag-platform)（含 Live Demo 與 [Demo 影片](https://www.youtube.com/watch?v=nUIZQTsouj4)）、[VLT CNC 拋光系統](https://github.com/kapy0312/vlt-cnc-showcase)、[BFX Lending Bot](https://github.com/kapy0312/bfx-lending-bot-showcase) |
 | 案例故事（`/case-studies`） | 5 則：撤回錯誤的評估結論、誠實計算預警命中率、RAG 整合工業異常診斷、微調負向結果、API Key 外洩後的機制修正 |
 | 其他作品 | 本地 AI 服務群、[字幕生成器](https://github.com/kapy0312/subtitle-app)、[YT-Media-Extractor](https://github.com/kapy0312/YT-Media-Extractor)、皮克敏成長中心 |
 | 技能、經歷、證照 | OT / IT 雙欄技能、工作經歷、AWS SAA 證照、西門子業界講師 |
@@ -39,6 +39,7 @@ portfolio-next/
 ├── public/
 │   ├── favicon.svg
 │   ├── images/               # 專案截圖（WebP）
+│   ├── videos/               # 卡片上的循環 Demo（由 GIF 轉成的 MP4）與預覽圖
 │   └── architecture/         # 各專案架構圖（獨立 HTML，已移除敏感資訊）
 ├── .github/workflows/
 │   └── deploy.yml            # build → .nojekyll → 推送 gh-pages
@@ -81,9 +82,20 @@ portfolio-next/
 | 經歷、證照 | `src/components/Experience.jsx` |
 | 聯絡方式 | `src/components/Contact.jsx`、`src/components/Navbar.jsx` |
 
-截圖放在 `public/images/`，在資料裡寫 `mediaUrl: "/images/檔名.webp"`；架構圖放在 `public/architecture/`，寫 `architecture: "/architecture/檔名.html"`，卡片會多一顆「架構圖」按鈕。路徑前綴都會自動處理。
+截圖放在 `public/images/`，在資料裡寫 `mediaUrl: "/images/檔名.webp"`；循環 Demo 放在 `public/videos/`，寫 `mediaType: "loop"`、`mediaUrl: "/videos/檔名.mp4"`、`mediaPoster`，卡片捲到畫面內才開始載入；YouTube 連結寫在 `video`，卡片會多一顆「影片」按鈕。架構圖放在 `public/architecture/`，寫 `architecture: "/architecture/檔名.html"`，卡片會多一顆「架構圖」按鈕。路徑前綴都會自動處理。
 
 **架構圖公開前的檢查**：VLT 是公司專案，公開版已移除 PLC／NCK 位址、程式名稱、機構規格；其他三張移除電腦名稱、私網 IP 與商業產品的已知弱點。更新架構圖時請照同樣原則檢查。
+
+## 更新 Demo GIF
+
+各專案 README 的 GIF 檔案很大（7～9 MB），網站改用 MP4（小約 10 倍，畫面相同）。專案 GIF 更新後，在 `portfolio-next` 根目錄執行（需要 ffmpeg）：
+
+```powershell
+ffmpeg -y -i ..\iot-scada-platform\docs\images\demo.gif -movflags +faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -preset slow -crf 28 -an public\videos\scada-demo.mp4
+ffmpeg -y -ss 12 -i ..\iot-scada-platform\docs\images\demo.gif -frames:v 1 -vf "scale=960:-2" public\videos\scada-poster.webp
+```
+
+RAG Platform 把路徑換成 `..\rag-platform\docs\images\demo.gif`、輸出檔名換成 `rag-demo.mp4`、`rag-poster.webp`，預覽圖的 `-ss 12` 改成 `-ss 31`（有答案和出處的畫面）。`-ss` 是擷取第幾秒當預覽圖，GIF 換新後記得重挑。
 
 ## 本機啟動
 
@@ -118,5 +130,4 @@ push 到 `main` 會觸發 `.github/workflows/deploy.yml`：
 ## 待辦事項
 
 - [ ] 104 履歷開放後，把連結加回 `Contact.jsx`
-- [ ] 錄好 IIoT SCADA、RAG Platform 的 Demo 影片後，填入對應卡片的 `demo`
 - [ ] `public/favicon.svg` 換成正式圖示
