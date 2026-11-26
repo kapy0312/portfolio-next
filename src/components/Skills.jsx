@@ -7,8 +7,8 @@ import SkillBadge from "./SkillBadge";
 const OT_SKILLS = [
   { name: "Siemens SINUMERIK ONE", note: "生產環境" },
   { name: "TIA Portal SCL / LAD", note: "生產環境" },
-  { name: "OPC-UA", note: "生產環境" },
-  { name: "SINAMICS S120 / G120", note: "業界講師認證" },
+  { name: "OPC-UA", note: "作品實作" },
+  { name: "SINAMICS S120 / G120", note: "授課經驗" },
   { name: "Mitsubishi iQ-R / FX5U", note: null },
   { name: "PLCSIM / SLMP / Modbus RTU", note: null },
 ];
@@ -19,6 +19,7 @@ const IT_SKILLS = [
   { name: "React / Vite", note: "商業專案" },
   { name: "Electron", note: "商業專案" },
   { name: "Node.js", note: null },
+  { name: "C#（HMI）", note: "生產環境" },
   { name: "AWS（Lambda / DynamoDB / S3）", note: "SAA 認證" },
   { name: "LLM / RAG / Claude API", note: "作品實作" },
   { name: "MCP Server", note: "作品實作" },
@@ -44,7 +45,7 @@ const WORKFLOW = [
     desc: "以 Claude / GPT 為開發搭檔，負責架構決策與品質審查",
   },
   { name: "GitHub Actions", desc: "多平台 CI/CD 自動建置與發布" },
-  { name: "Docker Compose", desc: "本地開發與生產環境容器化" },
+  { name: "Docker Compose", desc: "本機開發與服務容器化" },
   { name: "Conda / venv", desc: "Python 多環境隔離管理" },
 ];
 

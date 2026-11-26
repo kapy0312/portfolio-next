@@ -70,7 +70,7 @@ const FEATURED = [
   {
     title: "VLT CNC 拋光系統",
     highlight:
-      "Siemens SINUMERIK ONE 五軸 CNC 拋光控制，C# HMI（3GL）整合加工參數管理、即時電流補償與 NC 程式自動生成。單站已交付客戶試車，多站架構（1 主站 + 11 子站）以 PUT/GET 交握協調開發中；已完成交接手冊與場內模擬機建置。",
+      "Siemens SINUMERIK ONE 五軸 CNC 拋光控制，C# HMI（3GL）整合加工參數管理、即時電流補償與 NC 程式自動生成。單站已交付客戶試車，多站架構（1 主站 + 11 子站）以 PUT/GET 交握協調開發中；已完成系統技術文件與場內模擬機建置。",
     tags: [
       "SINUMERIK ONE",
       "TIA Portal SCL / LAD",
@@ -93,9 +93,9 @@ const FEATURED = [
   {
     title: "BFX Lending Bot",
     highlight:
-      "Bitfinex P2P 放貸自動化桌面應用，有付費用戶的商業產品。API Key 不離開客戶電腦；授權驗證移到 AWS Lambda，金鑰不再放在客戶端；新增 USD↔USDt 依 VWAP 一鍵切換資金。GitHub Actions 以 tag 自動建置 Windows / macOS 並發布更新。",
+      "Bitfinex P2P 放貸自動化桌面應用，已上架 Whop 販售。使用者的 API Key 不離開本機；授權驗證移到 AWS Lambda，授權金鑰不再放在安裝檔內；新增 USD↔USDt 依 VWAP 一鍵切換資金。GitHub Actions 以 tag 自動建置 Windows / macOS 並發布更新。",
     metrics: [
-      { label: "自動化測試", value: "300+" },
+      { label: "自動化測試", value: "284" },
       { label: "平台", value: "Win / Mac" },
       { label: "銷售", value: "Whop" },
     ],

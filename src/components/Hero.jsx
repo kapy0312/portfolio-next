@@ -98,7 +98,7 @@ export default function Hero() {
           從 Siemens PLC 邏輯到 FastAPI 微服務，從 CNC 協調控制到 LLM AI 診斷——
           跨越 OT／IT 邊界，讓工廠數據真正流動起來。
           <span className="block mt-3 text-sm text-dim">
-            勞動部勞動力發展署 中彰投分署・西門子 PLC／伺服馬達課程講師
+            勞動部勞動力發展署 中彰投分署・西門子 PLC／伺服馬達課程兼任講師（2020–2024）
           </span>
         </p>
 
