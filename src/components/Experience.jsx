@@ -2,13 +2,14 @@
 
 import { useInView } from "@/hooks/useInView";
 import SectionTitle from "./SectionTitle";
+import { asset } from "@/lib/asset";
 
 const EXPERIENCES = [
   {
-    period: "2023/03 — 現在",
-    role: "CIM / 工業 AI 工程師",
-    company: "製造業（台中，金屬加工用機械製造）",
-    desc: "負責五軸 CNC 拋光系統 PLC / HMI 開發（SINUMERIK ONE + TIA Portal + C# HMI），單站已交付客戶試車，多站協調架構開發中，並完成交接手冊與場內模擬機。工作之餘自主建置 IIoT SCADA 與 RAG 平台，把 OPC UA、時序資料、LLM 診斷與 AWS 雲端串成完整作品。",
+    period: "2025/03 — 現在",
+    role: "電控工程師（CNC / HMI 開發）",
+    company: "銓瑩電機有限公司（回任）",
+    desc: "負責 Siemens SINUMERIK ONE 五軸同動拋光機的 PLC 與 C# 客製化 HMI 開發（TIA Portal + Create MyHMI / 3GL），單站已交付客戶試車，多站協調架構開發中，並完成交接手冊與場內模擬機。同期在工作之餘自主開發 BFX 放貸機器人（商業產品），近半年再投入 IIoT SCADA 與 RAG 知識庫平台，把 OPC UA、時序資料、LLM 與 AWS 雲端串成完整作品。",
     tags: [
       "SINUMERIK ONE",
       "TIA Portal",
@@ -18,21 +19,44 @@ const EXPERIENCES = [
     ],
   },
   {
-    period: "2020/12 — 現在",
+    period: "2023/03 — 2025/01",
+    role: "電控工程師",
+    company: "榮蓁科技股份有限公司",
+    desc: "協助開發環保設備新機種的電控系統，包含汙泥乾燥機與切削液過濾機。以 Omron PLC 搭配 Weintek（威綸）HMI 實作自動化控制與運轉數據監控，提升設備穩定性與能源效率。",
+    tags: ["Omron PLC", "Weintek HMI", "汙泥乾燥機", "過濾機"],
+  },
+  {
+    period: "2020/12 — 2024（兼任）",
     role: "西門子業界講師",
     company: "勞動部勞動力發展署 中彰投分署",
-    desc: "受政府機構認證，擔任西門子技術課程業界講師，開設伺服馬達控制應用班、西門子 PLC 基礎班及青年專班課程，培訓電控領域技術人才。",
-    tags: ["SINUMERIK", "SINAMICS", "S120", "TIA Portal", "伺服馬達"],
+    desc: "受政府機構認證，兼任西門子技術課程業界講師，開設伺服馬達控制應用班、西門子 PLC 基礎班及青年專班伺服馬達課程，培訓電控領域技術人才。2025–2026 年分署更新場地設備暫停開課，預計 2027 年復課。",
+    tags: ["SINAMICS", "S120", "TIA Portal", "S7-1500", "伺服馬達"],
+    records: {
+      title: "有授課證明的班次",
+      summary: "3 個班次・合計 140 小時（另有其他班次未申請證明）",
+      items: [
+        { period: "2024/06 – 07", name: "西門子伺服馬達控制應用班", hours: "46 小時" },
+        { period: "2024/03 – 04", name: "西門子 S7-1500 PLC 基礎班", hours: "46 小時" },
+        { period: "2023/05 – 06", name: "西門子伺服馬達控制應用班", hours: "48 小時" },
+      ],
+    },
+    gallery: [
+      { src: "/images/teaching/teach-2024-servo.webp", alt: "2024 西門子伺服馬達控制應用班 授課證明（已遮蔽簽名、官印與字號）" },
+      { src: "/images/teaching/teach-2024-plc.webp", alt: "2024 西門子 S7-1500 PLC 基礎班 授課證明（已遮蔽簽名、官印與字號）" },
+      { src: "/images/teaching/teach-2023-servo.webp", alt: "2023 西門子伺服馬達控制應用班 授課證明（已遮蔽簽名、官印與字號）" },
+    ],
+    galleryNote: "證明文件已遮蔽簽名、官印與字號，正本可於面試時提供。",
   },
   {
     period: "2018/09 — 2023/03",
     role: "PLC 電控工程師",
     company: "銓瑩電機有限公司",
-    desc: "4 年 7 個月，跨產業自動化控制系統設計與實施。涵蓋五軸拋光機（Beckhoff CNC）、金屬製管機追剪（Siemens 1511T 電子凸輪）、玻璃雙邊機（三菱 iQ-R）、立式搪磨機、深孔加工機等多類機種，橫跨 Siemens、Mitsubishi、Omron、Beckhoff 四大平台。",
+    desc: "4 年 7 個月，跨產業自動化控制系統設計與實施。涵蓋金屬製管機追剪與鑽尾螺絲成型機（Siemens 1511T 電子凸輪）、立式搪磨機（三菱 iQ-R / Siemens 1515 PC2 雙平台實作）、玻璃雙邊機與掃邊機（三菱 iQ-R / ET200SP）、內外圓筒磨床與深孔加工機（Siemens 1511T / 三菱 FX5U）、壓空成型機溫控（FX3U + Modbus RTU），以及與冷凍空調科的學術合作（Omron NX1P2），橫跨 Siemens、Mitsubishi、Omron 三大平台。",
     tags: [
       "Siemens S7-1511T",
+      "電子凸輪",
       "Mitsubishi iQ-R",
-      "Beckhoff CNC",
+      "Mitsubishi FX5U",
       "Omron NX1P2",
       "Modbus RTU",
     ],
@@ -43,12 +67,16 @@ const CERTS = [
   {
     date: "2026/10",
     name: "AWS Certified Solutions Architect – Associate",
-    note: "SAA-C03，790 分",
+    note: "SAA-C03，790 分・有效至 2029/10",
+    verify: {
+      href: "https://www.credly.com/badges/aa67eeec-bea7-46c5-8ae7-3bddf340e6de",
+      label: "Credly 線上驗證",
+    },
   },
   {
-    date: "2020/12 起",
+    date: "2020 – 2024",
     name: "勞動部勞動力發展署 西門子業界講師",
-    note: "PLC、伺服馬達控制課程",
+    note: "PLC、伺服馬達控制課程・有證明 140 小時",
   },
 ];
 
@@ -89,6 +117,54 @@ function TimelineItem({ exp, isLast, delay }) {
             ))}
           </div>
         )}
+
+        {exp.records && (
+          <div className="mt-5 max-w-xl rounded-lg border border-white/[0.08] bg-white/[0.02] p-4">
+            <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-3">
+              <p className="text-xs font-mono tracking-wider text-dim">{exp.records.title}</p>
+              <p className="text-xs text-cyan/80">{exp.records.summary}</p>
+            </div>
+            <ul className="flex flex-col gap-2">
+              {exp.records.items.map((r) => (
+                <li
+                  key={r.period + r.name}
+                  className="grid grid-cols-[1fr_auto] sm:grid-cols-[auto_1fr_auto] items-baseline gap-x-3 gap-y-0.5 text-sm"
+                >
+                  <span className="col-span-2 sm:col-span-1 font-mono text-xs text-dim">{r.period}</span>
+                  <span className="text-primary">{r.name}</span>
+                  <span className="font-mono text-xs text-cyan/80">{r.hours}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {exp.gallery && (
+          <div className="mt-4 max-w-xl">
+            <div className="grid grid-cols-3 gap-3">
+              {exp.gallery.map((g) => (
+                <a
+                  key={g.src}
+                  href={asset(g.src)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block overflow-hidden rounded border border-white/[0.1] bg-white/[0.03] hover:border-cyan/40 transition-colors"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={asset(g.src)}
+                    alt={g.alt}
+                    loading="lazy"
+                    className="w-full aspect-[3/4] object-cover object-top"
+                  />
+                </a>
+              ))}
+            </div>
+            {exp.galleryNote && (
+              <p className="mt-2 text-[11px] text-dim">{exp.galleryNote}</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -118,11 +194,30 @@ export default function Experience() {
             {CERTS.map((c) => (
               <li
                 key={c.name}
-                className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-3"
+                className="rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-3"
               >
-                <span className="text-xs font-mono text-dim sm:w-24 shrink-0">{c.date}</span>
-                <span className="text-sm text-primary font-medium">{c.name}</span>
-                <span className="text-xs text-cyan/70 sm:ml-auto">{c.note}</span>
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                  <span className="text-xs font-mono text-dim sm:w-24 shrink-0">{c.date}</span>
+                  <span className="text-sm text-primary font-medium">{c.name}</span>
+                  <span className="text-xs text-cyan/70 sm:ml-auto">{c.note}</span>
+                </div>
+                {c.verify && (
+                  <div className="mt-2 sm:ml-28 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
+                    <a
+                      href={c.verify.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-cyan hover:underline"
+                    >
+                      {c.verify.label} ↗
+                    </a>
+                    {c.verify.code && (
+                      <span className="font-mono text-dim break-all">
+                        驗證碼 {c.verify.code}
+                      </span>
+                    )}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
