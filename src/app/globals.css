@@ -10,9 +10,16 @@
 
     --color-primary: #E8EDF7;
     --color-muted: #8892A4;
-    --color-dim: #4A5568;
+    --color-dim: #7A869B;
 
     --color-amber: #FFB84D;
+
+    /* 字級：放大小字、拉開行距（html 根字級 18px） */
+    --text-xs: 0.8rem;
+    --text-xs--line-height: 1.55;
+    --text-sm: 0.9rem;
+    --text-sm--line-height: 1.7;
+    --text-base--line-height: 1.75;
 
     --font-display: var(--font-display-raw), var(--font-tc-raw), ui-sans-serif, sans-serif;
     --font-body: var(--font-body-raw), var(--font-tc-raw), ui-sans-serif, sans-serif;

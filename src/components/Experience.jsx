@@ -63,6 +63,22 @@ const EXPERIENCES = [
   },
 ];
 
+const EDUCATION = [
+  {
+    period: "2016/06 畢業",
+    school: "國立雲林科技大學",
+    degree: "資訊管理系 碩士",
+    thesis: "Android 手機行為之安全檢測平台建置：基於 CSA 及 OWASP 之行動安全規範",
+    desc: "以 CSA 與 OWASP 行動安全規範為檢測標準，建置線上手機安全檢測平台：透過 USB 偵錯與 VPN 無線連線讀取手機狀態，反組譯 App 分析敏感權限與 API 呼叫，產出客觀的檢測報告並以 Email 寄送。",
+    link: { href: "https://hdl.handle.net/11296/3sc858", label: "臺灣博碩士論文系統" },
+  },
+  {
+    period: "2014/06 畢業",
+    school: "弘光科技大學",
+    degree: "資訊工程系 學士（四技）",
+  },
+];
+
 const CERTS = [
   {
     date: "2026/10",
@@ -110,7 +126,7 @@ function TimelineItem({ exp, isLast, delay }) {
             {exp.tags.map((t) => (
               <span
                 key={t}
-                className="px-2.5 py-0.5 text-[11px] font-mono border border-white/[0.1] text-dim rounded"
+                className="px-2.5 py-0.5 text-xs font-mono border border-white/[0.1] text-dim rounded"
               >
                 {t}
               </span>
@@ -161,7 +177,7 @@ function TimelineItem({ exp, isLast, delay }) {
               ))}
             </div>
             {exp.galleryNote && (
-              <p className="mt-2 text-[11px] text-dim">{exp.galleryNote}</p>
+              <p className="mt-2 text-xs text-dim">{exp.galleryNote}</p>
             )}
           </div>
         )}
@@ -188,6 +204,47 @@ export default function Experience() {
 
         <div className="mt-6 pt-10 border-t border-white/[0.07]">
           <p className="text-xs font-mono tracking-[0.18em] uppercase text-dim mb-5">
+            Education
+          </p>
+          <ul className="flex flex-col gap-3">
+            {EDUCATION.map((e) => (
+              <li
+                key={e.school}
+                className="rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-3"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                  <span className="text-xs font-mono text-dim sm:w-24 shrink-0">{e.period}</span>
+                  <span className="text-sm text-primary font-medium">{e.school}</span>
+                  <span className="text-xs text-cyan/70 sm:ml-auto">{e.degree}</span>
+                </div>
+                {e.thesis && (
+                  <div className="mt-3 sm:ml-28 text-sm">
+                    <p className="text-primary/90 leading-relaxed">
+                      <span className="text-xs font-mono text-dim mr-2">論文</span>
+                      {e.thesis}
+                    </p>
+                    {e.desc && (
+                      <p className="mt-1.5 text-xs text-muted leading-relaxed">{e.desc}</p>
+                    )}
+                    {e.link && (
+                      <a
+                        href={e.link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-1 text-xs text-cyan hover:underline"
+                      >
+                        {e.link.label} ↗
+                      </a>
+                    )}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-10">
+          <p className="text-xs font-mono tracking-[0.18em] uppercase text-dim mb-5">
             Certifications
           </p>
           <ul className="flex flex-col gap-3">
@@ -202,7 +259,7 @@ export default function Experience() {
                   <span className="text-xs text-cyan/70 sm:ml-auto">{c.note}</span>
                 </div>
                 {c.verify && (
-                  <div className="mt-2 sm:ml-28 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
+                  <div className="mt-2 sm:ml-28 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                     <a
                       href={c.verify.href}
                       target="_blank"

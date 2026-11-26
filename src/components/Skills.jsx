@@ -61,7 +61,7 @@ function SkillItem({ name, note, variant, delay }) {
     >
       <span className="text-sm text-primary">{name}</span>
       {note && (
-        <span className={`text-[10px] font-mono tracking-wide ${accent}`}>
+        <span className={`text-xs font-mono tracking-wide ${accent}`}>
           {note}
         </span>
       )}

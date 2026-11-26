@@ -20,7 +20,7 @@ export default function CaseStudiesPreview() {
               href={`/case-studies/#${story.slug}`}
               className="project-card relative rounded-xl bg-surface p-6 flex flex-col gap-3"
             >
-              <span className="text-[10px] font-mono tracking-[0.15em] uppercase text-cyan/70">
+              <span className="text-xs font-mono tracking-[0.15em] uppercase text-cyan/70">
                 {story.project}
               </span>
               <h3 className="font-display font-semibold text-lg text-primary leading-snug">

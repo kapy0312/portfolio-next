@@ -153,7 +153,7 @@ export default function Hero() {
           ].map((tag) => (
             <span
               key={tag}
-              className="px-2.5 py-1 text-[11px] font-mono text-dim border border-white/[0.07] rounded bg-white/[0.02]"
+              className="px-2.5 py-1 text-xs font-mono text-dim border border-white/[0.07] rounded bg-white/[0.02]"
             >
               {tag}
             </span>
@@ -169,7 +169,7 @@ export default function Hero() {
           ${mounted ? 'opacity-40' : 'opacity-0'}
         `}
       >
-        <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-muted">Scroll</span>
+        <span className="text-xs font-mono tracking-[0.2em] uppercase text-muted">Scroll</span>
         <div className="w-px h-8 bg-gradient-to-b from-muted/60 to-transparent" />
       </div>
     </section>

@@ -99,7 +99,7 @@ function LinkButton({ url, label, icon, tooltip }) {
           <span
             className="
             absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1
-            text-[10px] font-mono whitespace-nowrap
+            text-xs font-mono whitespace-nowrap
             bg-surface-hi border border-white/[0.12] text-muted rounded
             opacity-0 group-hover:opacity-100
             pointer-events-none transition-opacity duration-150
@@ -187,12 +187,12 @@ function FeaturedCard({ project, delay }) {
       <div className="flex flex-col flex-1 p-6 gap-4">
         <div>
           {project.nda && (
-            <span className="inline-block mb-2 text-[10px] font-mono tracking-[0.15em] uppercase px-2 py-0.5 rounded border border-amber/30 text-amber/70">
+            <span className="inline-block mb-2 text-xs font-mono tracking-[0.15em] uppercase px-2 py-0.5 rounded border border-amber/30 text-amber/70">
               NDA · 架構說明
             </span>
           )}
           {project.badge && (
-            <span className="inline-block mb-2 ml-0 text-[10px] font-mono tracking-[0.15em] uppercase px-2 py-0.5 rounded border border-cyan/30 text-cyan/80">
+            <span className="inline-block mb-2 ml-0 text-xs font-mono tracking-[0.15em] uppercase px-2 py-0.5 rounded border border-cyan/30 text-cyan/80">
               {project.badge}
             </span>
           )}
@@ -211,7 +211,7 @@ function FeaturedCard({ project, delay }) {
                 key={m.label}
                 className="rounded-md border border-white/[0.08] bg-white/[0.02] px-2.5 py-2"
               >
-                <dt className="text-[10px] text-dim leading-tight">{m.label}</dt>
+                <dt className="text-xs text-dim leading-tight">{m.label}</dt>
                 <dd className="font-display font-semibold text-base text-cyan leading-tight mt-0.5">
                   {m.value}
                 </dd>

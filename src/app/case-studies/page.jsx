@@ -51,7 +51,7 @@ export default function CaseStudiesPage() {
         <div className="flex flex-col gap-20">
           {CASE_STUDIES.map((story) => (
             <article key={story.slug} id={story.slug} className="scroll-mt-24">
-              <span className="text-[10px] font-mono tracking-[0.15em] uppercase text-cyan/70">
+              <span className="text-xs font-mono tracking-[0.15em] uppercase text-cyan/70">
                 {story.project}
               </span>
               <h2 className="font-display font-semibold text-2xl text-primary leading-snug mt-1 mb-3">
