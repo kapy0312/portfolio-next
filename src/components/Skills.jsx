@@ -42,7 +42,7 @@ const IT_TAGS = ["Agent", "Hybrid Search", "Reranker", "LLM 評估", "Qdrant", "
 const WORKFLOW = [
   {
     name: "AI 協作開發",
-    desc: "以 Claude / GPT 為開發搭檔，負責架構決策與品質審查",
+    desc: "以 Claude / Gemini 為開發搭檔，負責架構決策、程式審查與測試驗證",
   },
   { name: "GitHub Actions", desc: "多平台 CI/CD 自動建置與發布" },
   { name: "Docker Compose", desc: "本機開發與服務容器化" },
