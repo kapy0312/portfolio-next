@@ -70,7 +70,7 @@ const FEATURED = [
   {
     title: "VLT CNC 拋光系統",
     highlight:
-      "Siemens SINUMERIK ONE 五軸 CNC 拋光控制，C# HMI（3GL）整合加工參數管理、即時電流補償與 NC 程式自動生成。單站已交付客戶試車，多站架構（1 主站 + 11 子站）以 PUT/GET 交握協調開發中；已完成系統技術文件與場內模擬機建置。",
+      "Siemens SINUMERIK ONE 五軸 CNC 拋光控制：TIA Portal 規劃拓樸與底層控制（MCP 面板、周邊、M Code），自動加工由 NC 程式執行；C# HMI（3GL）將加工表轉換生成 G Code，並整合參數管理、即時電流補償與手動／自動操作。單站已交付客戶試車；多站架構完成 1 主站 + 2 子站（虛擬軸）的 PUT/GET 交握驗證後階段性暫緩；已完成系統技術文件與場內模擬機建置。",
     tags: [
       "SINUMERIK ONE",
       "TIA Portal SCL / LAD",

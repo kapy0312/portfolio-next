@@ -73,7 +73,7 @@ export default function Hero() {
           `}
         >
           <span className="block text-5xl md:text-7xl lg:text-8xl text-primary">
-            CIM 工程師
+            AI 應用工程師
           </span>
 
           <span
@@ -84,7 +84,7 @@ export default function Hero() {
           </span>
 
           <span className="block text-5xl md:text-7xl lg:text-8xl text-primary">
-            工業 AI 全端開發
+            工業現場出身
           </span>
         </h1>
 
@@ -98,7 +98,7 @@ export default function Hero() {
           從 Siemens PLC 邏輯到 FastAPI 微服務，從 CNC 協調控制到 LLM AI 診斷——
           跨越 OT／IT 邊界，讓工廠數據真正流動起來。
           <span className="block mt-3 text-sm text-dim">
-            勞動部勞動力發展署 中彰投分署・西門子 PLC／伺服馬達課程兼任講師（2020–2024）
+            勞動部勞動力發展署 中彰投分署・西門子 PLC／伺服／變頻控制課程兼任講師（2020–2024）
           </span>
         </p>
 

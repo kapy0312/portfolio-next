@@ -9,7 +9,7 @@ const EXPERIENCES = [
     period: "2025/03 — 現在",
     role: "電控工程師（兼職・CNC / HMI 開發與技術指導）",
     company: "銓瑩電機有限公司（回任，每週約 2.5 天）",
-    desc: "以兼職身分回任，負責 Siemens SINUMERIK ONE 五軸同動拋光機的 PLC 與 C# 客製化 HMI 開發（TIA Portal + Create MyHMI / 3GL），單站已交付客戶試車，多站協調架構開發中；並建置場內模擬機，用於程式驗證與新人伺服調機訓練，同時提供團隊技術支援與撰寫系統技術文件。其餘時間自主開發 BFX 放貸機器人（已上架販售的桌面軟體），近半年再投入 IIoT SCADA 與 RAG 知識庫平台，把 OPC UA、時序資料、LLM 與 AWS 雲端串成完整作品。",
+    desc: "以兼職身分回任，負責 Siemens SINUMERIK ONE 五軸同動拋光機：以 TIA Portal 規劃拓樸與底層控制邏輯（MCP 面板、周邊、M Code），自動加工由 NC 程式執行；以 C#（Create MyHMI / 3GL）開發操作介面，將加工表轉換生成 G Code 並管理加工參數。單站已交付客戶試車，多站架構完成 1 主站 + 2 子站（虛擬軸）交握驗證後階段性暫緩；並建置場內模擬機，用於程式驗證與新人伺服調機訓練，同時提供團隊技術支援與撰寫系統技術文件。其餘時間自主開發 BFX 放貸機器人（已上架販售的桌面軟體），近半年再投入 IIoT SCADA 與 RAG 知識庫平台，把 OPC UA、時序資料、LLM 與 AWS 雲端串成完整作品。",
     tags: [
       "SINUMERIK ONE",
       "TIA Portal",
@@ -22,15 +22,15 @@ const EXPERIENCES = [
     period: "2023/03 — 2025/01",
     role: "電控工程師",
     company: "榮蓁科技股份有限公司",
-    desc: "協助開發環保設備新機種的電控系統，包含汙泥乾燥機與切削液過濾機。以 Omron PLC 搭配 Weintek（威綸）HMI 實作自動化控制與運轉數據監控，並針對設備運轉穩定性與能耗調整控制邏輯。",
-    tags: ["Omron PLC", "Weintek HMI", "汙泥乾燥機", "過濾機"],
+    desc: "參與汙泥乾燥機與切削液過濾機新機種的試機、驗證與現場除錯（Omron PLC + Weintek 威綸 HMI）。以水分分析儀量測烘乾前後的汙泥含水率、交叉比對參數組合找出較佳設定；測試過濾機運轉參數對切削液溫度的影響以維持溫度平衡；並負責現場 PLC 程式除錯與小幅邏輯修改（主要程式架構由主管開發），以及依配線圖執行現場配線。",
+    tags: ["Omron PLC", "Weintek HMI", "製程參數驗證", "試機與除錯"],
   },
   {
     period: "2020/12 — 2024/07（兼任）",
     role: "西門子業界講師",
     company: "勞動部勞動力發展署 中彰投分署",
-    desc: "受聘為分署業界講師，兼任西門子技術課程，開設伺服馬達控制應用班、西門子 PLC 基礎班及青年專班伺服馬達課程，培訓電控領域技術人才。2025–2026 年分署更新場地設備暫停開課，預計 2027 年復課。",
-    tags: ["SINAMICS", "S120", "TIA Portal", "S7-1500", "伺服馬達"],
+    desc: "受聘為分署業界講師，兼任西門子技術課程，開設伺服馬達控制應用班、西門子 PLC 基礎班、西門子變頻器應用班（SINAMICS G120）及青年專班伺服馬達課程，培訓電控領域技術人才。2025–2026 年分署更新場地設備暫停開課，預計 2027 年復課。",
+    tags: ["SINAMICS S120", "G120 變頻", "TIA Portal", "S7-1500", "伺服馬達"],
     records: {
       title: "有授課證明的班次",
       summary: "3 個班次・合計 140 小時（另有其他班次未申請證明）",
@@ -51,7 +51,7 @@ const EXPERIENCES = [
     period: "2018/09 — 2023/03",
     role: "PLC 電控工程師",
     company: "銓瑩電機有限公司",
-    desc: "4 年 7 個月，跨產業自動化控制系統設計與實施，從電控盤配線、現場安裝試機到 PLC 程式撰寫皆有參與。涵蓋拋光機五軸同動（Beckhoff CNC）、金屬製管機追剪與鑽尾螺絲成型機（Siemens 1511T 電子凸輪）、立式搪磨機（三菱 iQ-R / Siemens 1515SP PC2 雙平台實作）、玻璃雙邊機與掃邊機（三菱 iQ-R / ET200SP）、內外圓筒磨床與深孔加工機（Siemens 1511T / 三菱 FX5U）、壓空成型機溫控（FX3U + Modbus RTU），以及與冷凍空調科的學術合作（Omron NX1P2），橫跨 Siemens、Mitsubishi、Omron、Beckhoff 四個平台。",
+    desc: "4 年 7 個月，參與跨產業自動化控制專案（含獨立開發、協同開發，以及在客戶既有系統上追加功能），從電控盤配線、現場安裝試機到 PLC 程式撰寫皆有涉及。涵蓋拋光機五軸同動（Beckhoff CNC）、金屬製管機追剪與鑽尾螺絲成型機（Siemens 1511T 電子凸輪）、立式搪磨機（三菱 iQ-R / Siemens 1515SP PC2 雙平台實作）、玻璃雙邊機與掃邊機（三菱 iQ-R / ET200SP）、內外圓筒磨床與深孔加工機（Siemens 1511T / 三菱 FX5U）、壓空成型機（於客戶既有系統追加溫控，FX3U + Modbus RTU），以及與冷凍空調科的學術合作（Omron NX1P2），橫跨 Siemens、Mitsubishi、Omron、Beckhoff 四個平台。",
     tags: [
       "Siemens S7-1511T",
       "電子凸輪",

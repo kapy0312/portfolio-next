@@ -22,13 +22,13 @@ const notoSansTC = Noto_Sans_TC({
 });
 
 export const metadata = {
-  title: "Kevin Lai — CIM × Industrial AI Engineer",
+  title: "Kevin Lai — AI Application & Software Engineer",
   description:
-    "Kevin Lai — CIM 工程師 × 工業 AI 全端開發。跨足 OT/IT 雙域的工程師，專注於 Siemens SINUMERIK、OPC-UA、FastAPI、React 與 AI 整合。",
+    "Kevin Lai — AI 應用與軟體工程師，PLC／CNC 電控出身。專注於 LLM／RAG 應用、FastAPI、React、AWS，以及製造業的資料收集與 AI 導入。",
   authors: [{ name: "Kevin Lai" }],
   openGraph: {
-    title: "Kevin Lai — CIM × Industrial AI Engineer",
-    description: "跨足 OT/IT 雙域的工程師，專注於工業自動化與 AI 全端開發。",
+    title: "Kevin Lai — AI Application & Software Engineer",
+    description: "PLC／CNC 電控出身的 AI 應用與軟體工程師，從現場設備一路做到雲端與 LLM。",
     url: "https://kapy0312.github.io/portfolio-next/",
     siteName: "Kevin Lai Portfolio",
     locale: "zh_TW",
