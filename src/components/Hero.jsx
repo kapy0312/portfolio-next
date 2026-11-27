@@ -1,16 +1,25 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
-const GITHUB_URL = 'https://github.com/kapy0312'
-const PROJECTS_ANCHOR = '#projects'
+const GITHUB_URL = "https://github.com/kapy0312";
+const PROJECTS_ANCHOR = "#projects";
 
 function ArrowDown() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M12 5v14M5 12l7 7 7-7" />
     </svg>
-  )
+  );
 }
 
 function GitHubIcon() {
@@ -18,16 +27,16 @@ function GitHubIcon() {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
       <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
     </svg>
-  )
+  );
 }
 
 export default function Hero() {
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 80)
-    return () => clearTimeout(t)
-  }, [])
+    const t = setTimeout(() => setMounted(true), 80);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <section
@@ -39,18 +48,29 @@ export default function Hero() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse 120% 80% at 50% 50%, transparent 30%, #0A0F1A 100%)',
+          background:
+            "radial-gradient(ellipse 120% 80% at 50% 50%, transparent 30%, #0A0F1A 100%)",
         }}
       />
 
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <div
           className="pulse-ring w-[480px] h-[480px] rounded-full border border-cyan/[0.06]"
-          style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)",
+          }}
         />
         <div
           className="pulse-ring pulse-ring-2 w-[700px] h-[700px] rounded-full border border-cyan/[0.03]"
-          style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)",
+          }}
         />
       </div>
 
@@ -59,7 +79,7 @@ export default function Hero() {
           className={`
             font-mono text-xs tracking-[0.25em] uppercase text-cyan mb-8
             transition-all duration-700 ease-out
-            ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+            ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
           `}
         >
           Industrial × Digital
@@ -69,7 +89,7 @@ export default function Hero() {
           className={`
             font-display font-bold leading-[1.05] tracking-tight
             transition-all duration-700 ease-out delay-100
-            ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}
+            ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
           `}
         >
           <span className="block text-5xl md:text-7xl lg:text-8xl text-primary">
@@ -84,7 +104,7 @@ export default function Hero() {
           </span>
 
           <span className="block text-5xl md:text-7xl lg:text-8xl text-primary">
-            工業現場出身
+            OT／IT
           </span>
         </h1>
 
@@ -92,13 +112,14 @@ export default function Hero() {
           className={`
             mt-8 max-w-xl text-base md:text-lg text-muted font-body leading-relaxed
             transition-all duration-700 ease-out delay-200
-            ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+            ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
           `}
         >
           從 Siemens PLC 邏輯到 FastAPI 微服務，從 CNC 協調控制到 LLM AI 診斷——
           跨越 OT／IT 邊界，讓工廠數據真正流動起來。
           <span className="block mt-3 text-sm text-dim">
-            勞動部勞動力發展署 中彰投分署・西門子 PLC／伺服／變頻控制課程兼任講師（2020–2024）
+            勞動部勞動力發展署 中彰投分署・西門子
+            PLC／伺服／變頻控制課程兼任講師（2020–2024）
           </span>
         </p>
 
@@ -106,7 +127,7 @@ export default function Hero() {
           className={`
             mt-10 flex flex-wrap items-center justify-center gap-4
             transition-all duration-700 ease-out delay-300
-            ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+            ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
           `}
         >
           <a
@@ -144,12 +165,18 @@ export default function Hero() {
           className={`
             mt-12 flex flex-wrap justify-center gap-2
             transition-all duration-700 ease-out delay-[400ms]
-            ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
+            ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}
           `}
         >
           {[
-            'SINUMERIK ONE', 'OPC UA', 'TIA Portal',
-            'FastAPI', 'React', 'RAG', 'MCP', 'AWS'
+            "SINUMERIK ONE",
+            "OPC UA",
+            "TIA Portal",
+            "FastAPI",
+            "React",
+            "RAG",
+            "MCP",
+            "AWS",
           ].map((tag) => (
             <span
               key={tag}
@@ -166,12 +193,14 @@ export default function Hero() {
           absolute bottom-10 left-1/2 -translate-x-1/2
           flex flex-col items-center gap-2
           transition-all duration-700 ease-out delay-500
-          ${mounted ? 'opacity-40' : 'opacity-0'}
+          ${mounted ? "opacity-40" : "opacity-0"}
         `}
       >
-        <span className="text-xs font-mono tracking-[0.2em] uppercase text-muted">Scroll</span>
+        <span className="text-xs font-mono tracking-[0.2em] uppercase text-muted">
+          Scroll
+        </span>
         <div className="w-px h-8 bg-gradient-to-b from-muted/60 to-transparent" />
       </div>
     </section>
-  )
+  );
 }
