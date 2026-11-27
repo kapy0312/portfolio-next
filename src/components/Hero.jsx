@@ -41,7 +41,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-bg"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-bg pt-24 pb-32"
     >
       <div className="absolute inset-0 hero-grid-bg pointer-events-none" />
 

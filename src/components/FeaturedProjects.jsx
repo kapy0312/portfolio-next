@@ -74,7 +74,7 @@ const FEATURED = [
     tags: [
       "SINUMERIK ONE",
       "TIA Portal SCL / LAD",
-      "SINAMICS S120",
+      "SINAMICS S120 / G120",
       "C# / WinForms",
       "TRAORI",
     ],
